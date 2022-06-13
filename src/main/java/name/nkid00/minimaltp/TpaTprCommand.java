@@ -12,14 +12,13 @@ import net.minecraft.text.Text;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class TpaTprCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+            CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
-            literal("tpa").executes(TpaTprCommand::TpaExecute)
-        );
+                literal("tpa").executes(TpaTprCommand::TpaExecute));
         dispatcher.register(
-            literal("tpr").executes(TpaTprCommand::TprExecute)
-        );
-	}
+                literal("tpr").executes(TpaTprCommand::TprExecute));
+    }
 
     public static int TpaExecute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
         var source = c.getSource();

@@ -2,26 +2,34 @@ package name.nkid00.minimaltp;
 
 import java.util.Collections;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import name.nkid00.minimaltp.mixin.TeleportCommandInvoker;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public class TpCommandModified {
+import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.server.command.CommandManager.argument;
+
+public class TpCommand {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+            CommandManager.RegistrationEnvironment environment) {
+        dispatcher.register(
+                literal("/tp").then(
+                        argument("destination", EntityArgumentType.player()).executes(TpCommand::execute)));
+    }
+
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
         var source = c.getSource();
-        if (source.hasPermissionLevel(2)) {
-            // operators, execute as vanilla
-            return TeleportCommandInvoker.execute(source, Collections.singleton(source.getEntityOrThrow()), EntityArgumentType.getEntity(c, "destination"));
-        }
-        // non-operators
-        var target = c.getSource().getPlayerOrThrow();
+        var target = source.getPlayerOrThrow();
         var destination = EntityArgumentType.getPlayer(c, "destination");
         var scoreboard = source.getServer().getScoreboard();
         var target_team = scoreboard.getPlayerTeam(target.getEntityName());
@@ -38,27 +46,23 @@ public class TpCommandModified {
         // destination player is in other teams, send request
         MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
         var feedback = target.getDisplayName().copy()
-            .append(" requested teleportation to you. You may ")
-            .append(
-                Text.literal("accept it (/tpa)")
-                .setStyle(
-                    Style.EMPTY
-                    .withColor(Formatting.GREEN)
-                    .withUnderline(true)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa"))
-                )
-            )
-            .append(" or ")
-            .append(
-                Text.literal("refuse it (/tpr)")
-                .setStyle(
-                    Style.EMPTY
-                    .withColor(Formatting.RED)
-                    .withUnderline(true)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpr"))
-                )
-            )
-            .append(String.format(" in %d seconds.", MinimalTp.EXPIRATION_INTERVAL));
+                .append(" requested teleportation to you. You may ")
+                .append(
+                        Text.literal("accept it (/tpa)")
+                                .setStyle(
+                                        Style.EMPTY
+                                                .withColor(Formatting.GREEN)
+                                                .withUnderline(true)
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa"))))
+                .append(" or ")
+                .append(
+                        Text.literal("refuse it (/tpr)")
+                                .setStyle(
+                                        Style.EMPTY
+                                                .withColor(Formatting.RED)
+                                                .withUnderline(true)
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpr"))))
+                .append(String.format(" in %d seconds.", MinimalTp.EXPIRATION_INTERVAL));
         destination.getCommandSource().sendFeedback(feedback, false);
         source.sendFeedback(Text.literal("Teleportation request sent."), false);
         return 0;

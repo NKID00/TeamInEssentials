@@ -14,7 +14,8 @@ import net.minecraft.server.command.TeleportCommand;
 @Mixin(TeleportCommand.class)
 public interface TeleportCommandInvoker {
     @Invoker("execute")
-    public static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) throws CommandSyntaxException {
+    public static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination)
+            throws CommandSyntaxException {
         throw new AssertionError();
     }
 }

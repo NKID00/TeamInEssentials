@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 
 public class MinimalTp implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("minimaltp");
-	public static final int PERMISSION_LEVEL = 2;
-	public static final long EXPIRATION_INTERVAL = 120;  // seconds
+	public static final long EXPIRATION_INTERVAL = 120; // seconds
 	public static final long EXPIRATION_INTERVAL_MS = EXPIRATION_INTERVAL * 1000;
 	public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
 
 	@Override
 	public void onInitialize() {
+		CommandRegistrationCallback.EVENT.register(TpCommand::register);
 		CommandRegistrationCallback.EVENT.register(TpaTprCommand::register);
 	}
 }
