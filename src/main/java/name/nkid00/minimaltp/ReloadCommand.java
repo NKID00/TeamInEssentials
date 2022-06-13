@@ -17,7 +17,7 @@ public class ReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
-                literal("/reload").requires(source -> source.hasPermissionLevel(2)).executes(ReloadCommand::execute));
+                literal("/tpreload").requires(source -> source.hasPermissionLevel(2)).executes(ReloadCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
