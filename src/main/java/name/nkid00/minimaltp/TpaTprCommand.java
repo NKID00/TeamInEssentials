@@ -28,7 +28,7 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                request.source.sendFeedback(Text.literal("Teleportation request is accepted."), false);
+                request.source.sendFeedback(Text.literal("Teleportation request was accepted."), false);
                 source.sendFeedback(Text.literal("Teleportation request accepted successfully."), false);
                 var result = request.execute();
                 if (result != 1) {
@@ -49,7 +49,7 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                request.source.sendFeedback(Text.literal("Teleportation request is refused."), false);
+                request.source.sendFeedback(Text.literal("Teleportation request was refused."), false);
                 source.sendFeedback(Text.literal("Teleportation request refused successfully."), false);
                 return 1;
             }

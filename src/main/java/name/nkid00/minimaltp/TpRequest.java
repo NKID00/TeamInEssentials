@@ -4,7 +4,7 @@ import java.util.Collections;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import name.nkid00.minimaltp.mixin.TeleportCommandMixin;
+import name.nkid00.minimaltp.mixin.TeleportCommandInvoker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -18,11 +18,11 @@ public class TpRequest {
         this.source = source;
         this.target = source.getPlayerOrThrow();
         this.destination = destination;
-        this.ExpirationTime = System.currentTimeMillis() + MinimalTp.EXPIRATION_INTERVAL;
+        this.ExpirationTime = System.currentTimeMillis() + MinimalTp.EXPIRATION_INTERVAL_MS;
     }
 
     public int execute() throws CommandSyntaxException {
-        return TeleportCommandMixin.execute(source, Collections.singleton(target), destination);
+        return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
     }
 
     public boolean isValid() {
