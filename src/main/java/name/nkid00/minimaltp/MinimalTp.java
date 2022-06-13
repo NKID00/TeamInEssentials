@@ -40,6 +40,7 @@ public class MinimalTp implements ModInitializer {
         // commands
         CommandRegistrationCallback.EVENT.register(TpCommand::register);
         CommandRegistrationCallback.EVENT.register(TpaTprCommand::register);
+        CommandRegistrationCallback.EVENT.register(ReloadCommand::register);
 
         // config
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
