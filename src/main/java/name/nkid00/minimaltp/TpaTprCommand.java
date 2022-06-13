@@ -33,7 +33,7 @@ public class TpaTprCommand {
                         .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
                 request.source.sendFeedback(
                         Text.literal(String.format("传送请求被接受, 将在%d秒后传送", MinimalTp.settings.teleport_interval))
-                                .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)),
+                                .setStyle(Style.EMPTY.withColor(Formatting.GREEN)),
                         false);
                 request.execute();
                 return 1;
