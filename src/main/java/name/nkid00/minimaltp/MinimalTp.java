@@ -3,14 +3,14 @@ package name.nkid00.minimaltp;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,12 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 public class MinimalTp implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("minimaltp");
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Timer TELEPORT_TIMER = new Timer(true);
 
     public static File configFile = null;
@@ -61,7 +62,7 @@ public class MinimalTp implements ModInitializer {
 
         // banner
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            handler.player.getCommandSource().sendFeedback(Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组"), false);
+            handler.player.getCommandSource().sendFeedback(Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
         });
     }
 }

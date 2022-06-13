@@ -41,35 +41,40 @@ public class TpCommand {
         var teleportImmediately = false;
         if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
             // same team
-            if (MinimalTp.settings.teammateImmediateTeleportation) {
+            if (MinimalTp.settings.immediate_teleportation_in_team) {
                 teleportImmediately = true;
             }
-        } else if (MinimalTp.settings.nonteammateImmediateTeleportation) {
-                teleportImmediately = true;
+        } else if (MinimalTp.settings.immediate_teleportation_between_team) {
+            teleportImmediately = true;
         }
         if (teleportImmediately) {
             return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
         } else {
             MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
-            var feedback = target.getDisplayName().copy()
-                    .append(String.format("请求传送至你的位置,可以在%d秒内选择", MinimalTp.settings.requestExpirationInterval))
+            var feedback = target.getDisplayName().copy().setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
+                    .append(Text
+                            .literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
+                                    MinimalTp.settings.request_expiration_interval))
+                            .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
                     .append(
-                            Text.literal("接受(/tpa)")
+                            Text.literal("接受(//tpa)")
                                     .setStyle(
                                             Style.EMPTY
                                                     .withColor(Formatting.GREEN)
                                                     .withUnderline(true)
-                                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa"))))
-                    .append("或")
+                                                    .withClickEvent(
+                                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"))))
+                    .append(Text.literal(" 或 ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
                     .append(
-                            Text.literal("拒绝(/tpr)")
+                            Text.literal("拒绝(//tpr)")
                                     .setStyle(
                                             Style.EMPTY
                                                     .withColor(Formatting.RED)
                                                     .withUnderline(true)
-                                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpr"))));
+                                                    .withClickEvent(
+                                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"))));
             destination.getCommandSource().sendFeedback(feedback, false);
-            source.sendFeedback(Text.literal("已发送传送请求"), false);
+            source.sendFeedback(Text.literal("已发送传送请求").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
             return 1;
         }
     }

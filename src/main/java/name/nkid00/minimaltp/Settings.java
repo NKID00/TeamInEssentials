@@ -1,8 +1,8 @@
 package name.nkid00.minimaltp;
 
 public class Settings {
-	public long teleportInterval = 3; // seconds
-	public long requestExpirationInterval = 120; // seconds
-    public boolean teammateImmediateTeleportation = true;
-    public boolean nonteammateImmediateTeleportation = false;
+	public long teleport_interval = 3; // seconds
+	public long request_expiration_interval = 120; // seconds
+    public boolean immediate_teleportation_in_team = true;
+    public boolean immediate_teleportation_between_team = false;
 }

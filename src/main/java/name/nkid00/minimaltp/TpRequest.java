@@ -19,11 +19,11 @@ public class TpRequest {
         this.source = source;
         this.target = source.getPlayerOrThrow();
         this.destination = destination;
-        this.ExpirationTime = System.currentTimeMillis() + MinimalTp.settings.requestExpirationInterval * 1000;
+        this.ExpirationTime = System.currentTimeMillis() + MinimalTp.settings.request_expiration_interval * 1000;
     }
 
     public void execute() throws CommandSyntaxException {
-        MinimalTp.TELEPORT_TIMER.schedule(new TpTask(this), MinimalTp.settings.teleportInterval * 1000);
+        MinimalTp.TELEPORT_TIMER.schedule(new TpTask(this), MinimalTp.settings.teleport_interval * 1000);
     }
 
     public int executeImmediately() throws CommandSyntaxException {
