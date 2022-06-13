@@ -1,4 +1,4 @@
-# 硬核自研大数据人工智能黑科技模组 Minimal Teleportation
+# 硬核自研大数据人工智能黑科技模组 <br> Minimal Teleportation
 
 Teleport to your teammates!
 
