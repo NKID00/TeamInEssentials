@@ -21,11 +21,14 @@ dependencies {
 	// Fabric API.
 	Set<String> apiModules = [
 		"fabric-command-api-v2",
-		"fabric-lifecycle-events-v1"
+		"fabric-lifecycle-events-v1",
+		"fabric-networking-api-v1"
 	]
 	apiModules.forEach {
 		include(modImplementation(fabricApi.module(it, "${project.fabric_version}")))
 	}
+
+	implementation 'com.google.code.gson:gson:2.9.0'
 }
 
 processResources {

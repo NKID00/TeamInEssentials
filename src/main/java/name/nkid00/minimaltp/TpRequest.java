@@ -1,6 +1,7 @@
 package name.nkid00.minimaltp;
 
 import java.util.Collections;
+import java.util.TimerTask;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -18,14 +19,33 @@ public class TpRequest {
         this.source = source;
         this.target = source.getPlayerOrThrow();
         this.destination = destination;
-        this.ExpirationTime = System.currentTimeMillis() + MinimalTp.EXPIRATION_INTERVAL_MS;
+        this.ExpirationTime = System.currentTimeMillis() + MinimalTp.settings.requestExpirationInterval * 1000;
     }
 
-    public int execute() throws CommandSyntaxException {
+    public void execute() throws CommandSyntaxException {
+        MinimalTp.TELEPORT_TIMER.schedule(new TpTask(this), MinimalTp.settings.teleportInterval * 1000);
+    }
+
+    public int executeImmediately() throws CommandSyntaxException {
         return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
     }
 
     public boolean isValid() {
         return System.currentTimeMillis() < this.ExpirationTime;
+    }
+
+    class TpTask extends TimerTask {
+        private final TpRequest request;
+        
+        public TpTask(TpRequest request) {
+            this.request = request;
+        }
+        
+        public void run() {
+            try {
+                request.executeImmediately();
+            } catch (CommandSyntaxException e) {
+            }
+        }
     }
 }

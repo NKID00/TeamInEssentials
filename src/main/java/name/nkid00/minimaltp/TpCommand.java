@@ -31,40 +31,46 @@ public class TpCommand {
         var source = c.getSource();
         var target = source.getPlayerOrThrow();
         var destination = EntityArgumentType.getPlayer(c, "destination");
+        if (target.equals(destination)) {
+            source.sendError(Text.literal("请不要随意玩耍硬核自研大数据人工智能黑科技模组!"));
+            return 0;
+        }
         var scoreboard = source.getServer().getScoreboard();
         var target_team = scoreboard.getPlayerTeam(target.getEntityName());
         var destination_team = scoreboard.getPlayerTeam(destination.getEntityName());
+        var teleportImmediately = false;
         if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
-            // destination player is in the same team, teleport immediately
-            source.sendFeedback(Text.literal("Teleporting to teammate..."), false);
-            var result = TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
-            if (result != 1) {
-                source.sendError(Text.literal("Teleportation failed. An unknown error occurred."));
+            // same team
+            if (MinimalTp.settings.teammateImmediateTeleportation) {
+                teleportImmediately = true;
             }
-            return result;
+        } else if (MinimalTp.settings.nonteammateImmediateTeleportation) {
+                teleportImmediately = true;
         }
-        // destination player is in other teams, send request
-        MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
-        var feedback = target.getDisplayName().copy()
-                .append(" requested teleportation to you. You may ")
-                .append(
-                        Text.literal("accept it (/tpa)")
-                                .setStyle(
-                                        Style.EMPTY
-                                                .withColor(Formatting.GREEN)
-                                                .withUnderline(true)
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa"))))
-                .append(" or ")
-                .append(
-                        Text.literal("refuse it (/tpr)")
-                                .setStyle(
-                                        Style.EMPTY
-                                                .withColor(Formatting.RED)
-                                                .withUnderline(true)
-                                                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpr"))))
-                .append(String.format(" in %d seconds.", MinimalTp.EXPIRATION_INTERVAL));
-        destination.getCommandSource().sendFeedback(feedback, false);
-        source.sendFeedback(Text.literal("Teleportation request sent."), false);
-        return 0;
+        if (teleportImmediately) {
+            return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
+        } else {
+            MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
+            var feedback = target.getDisplayName().copy()
+                    .append(String.format("请求传送至你的位置,可以在%d秒内选择", MinimalTp.settings.requestExpirationInterval))
+                    .append(
+                            Text.literal("接受(/tpa)")
+                                    .setStyle(
+                                            Style.EMPTY
+                                                    .withColor(Formatting.GREEN)
+                                                    .withUnderline(true)
+                                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa"))))
+                    .append("或")
+                    .append(
+                            Text.literal("拒绝(/tpr)")
+                                    .setStyle(
+                                            Style.EMPTY
+                                                    .withColor(Formatting.RED)
+                                                    .withUnderline(true)
+                                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpr"))));
+            destination.getCommandSource().sendFeedback(feedback, false);
+            source.sendFeedback(Text.literal("已发送传送请求"), false);
+            return 1;
+        }
     }
 }

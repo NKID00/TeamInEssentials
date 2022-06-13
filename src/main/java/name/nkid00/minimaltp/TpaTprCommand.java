@@ -27,17 +27,13 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                request.source.sendFeedback(Text.literal("Teleportation request was accepted."), false);
-                source.sendFeedback(Text.literal("Teleportation request accepted successfully."), false);
-                var result = request.execute();
-                if (result != 1) {
-                    request.source.sendError(Text.literal("Teleportation failed. An unknown error occurred."));
-                    source.sendError(Text.literal("Teleportation failed. An unknown error occurred."));
-                }
-                return result;
+                source.sendFeedback(Text.literal(String.format("将在%d秒后传送", MinimalTp.settings.teleportInterval)), false);
+                request.source.sendFeedback(Text.literal(String.format("将在%d秒后传送", MinimalTp.settings.teleportInterval)), false);
+                request.execute();
+                return 1;
             }
         }
-        source.sendError(Text.literal("Teleportation request expired or does not exist."));
+        source.sendError(Text.literal("传送请求已过期或不存在"));
         return 0;
     }
 
@@ -48,12 +44,12 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                request.source.sendFeedback(Text.literal("Teleportation request was refused."), false);
-                source.sendFeedback(Text.literal("Teleportation request refused successfully."), false);
+                source.sendFeedback(Text.literal("已拒绝传送请求"), false);
+                request.source.sendFeedback(Text.literal("传送请求被拒绝"), false);
                 return 1;
             }
         }
-        source.sendError(Text.literal("Teleportation request expired or does not exist."));
+        source.sendError(Text.literal("传送请求已过期或不存在"));
         return 0;
     }
 }
