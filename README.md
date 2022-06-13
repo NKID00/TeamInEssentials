@@ -1,22 +1,16 @@
-# Minimal Teleportation
+# 硬核自研大数据人工智能黑科技模组 Minimal Teleportation
 
 Teleport to your teammates!
 
-## Usage
+## 用法
 
-The new command `//tp` (double slashes) allows teleportations by non-operators (and operators) with conditions.
+输入 `//tp` (两个斜杠) 来使用硬核自研大数据人工智能黑科技模组。
 
-- Players can now teleport themselves to players in the same team with the command `//tp <player>`.
+## 安装
 
-- Players can now request players in other teams to teleport to them with the command `//tp <player>`.
-  
-  - The destination player can accept or refuse the request with the command `/tpa` or `/tpr`.
+需要安装最新的 Fabric Loader 和 Fabric API。
 
-## Installation
-
-Requires the latest Fabric Loader and Fabric API.
-
-For multiplayer games, the mod only needs to be installed on the server side
+多人游戏中，模组只需安装在服务器上。
 
 ## License
 
