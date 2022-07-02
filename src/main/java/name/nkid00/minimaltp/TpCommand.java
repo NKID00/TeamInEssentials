@@ -60,7 +60,7 @@ public class TpCommand {
                             Text.literal("接受(//tpa)")
                                     .setStyle(
                                             Style.EMPTY
-                                                    .withColor(Formatting.GREEN)
+                                                    .withColor(Formatting.DARK_GREEN)
                                                     .withUnderline(true)
                                                     .withClickEvent(
                                                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"))))
@@ -69,7 +69,7 @@ public class TpCommand {
                             Text.literal("拒绝(//tpr)")
                                     .setStyle(
                                             Style.EMPTY
-                                                    .withColor(Formatting.RED)
+                                                    .withColor(Formatting.DARK_RED)
                                                     .withUnderline(true)
                                                     .withClickEvent(
                                                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"))));
