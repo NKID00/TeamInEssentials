@@ -33,8 +33,7 @@ public class TpaTprCommand {
                         .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
                 request.source.sendFeedback(
                         Text.literal(String.format("传送请求被接受, 将在%d秒后传送", MinimalTp.settings.teleport_interval))
-                                .setStyle(Style.EMPTY.withColor(Formatting.GREEN)),
-                        false);
+                                .setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
                 request.execute();
                 return 1;
             }
@@ -50,7 +49,8 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                source.sendFeedback(Text.literal("已拒绝传送请求").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
+                source.sendFeedback(Text.literal("已拒绝传送请求")
+                        .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
                 request.source.sendError(Text.literal("传送请求被拒绝"));
                 return 1;
             }
