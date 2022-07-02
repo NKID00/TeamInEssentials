@@ -29,10 +29,10 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                source.sendFeedback(Text.literal(String.format("将在%d秒后传送", MinimalTp.settings.teleport_interval))
+                source.sendFeedback(Text.literal(String.format("已接受xxx的传送请求, 将在%d秒后传送", MinimalTp.settings.teleport_interval))
                         .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
                 request.source.sendFeedback(
-                        Text.literal(String.format("传送请求被接受, 将在%d秒后传送", MinimalTp.settings.teleport_interval))
+                        Text.literal(String.format("对xxx的传送请求被接受, 将在%d秒后传送", MinimalTp.settings.teleport_interval))
                                 .setStyle(Style.EMPTY.withColor(Formatting.GREEN)), false);
                 request.execute();
                 return 1;
@@ -49,9 +49,9 @@ public class TpaTprCommand {
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
             if (request.isValid()) {
-                source.sendFeedback(Text.literal("已拒绝传送请求")
+                source.sendFeedback(Text.literal("已拒绝xxx的传送请求")
                         .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
-                request.source.sendError(Text.literal("传送请求被拒绝"));
+                request.source.sendError(Text.literal("对xxx的传送请求被拒绝"));
                 return 1;
             }
         }
