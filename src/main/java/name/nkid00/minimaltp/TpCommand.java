@@ -20,6 +20,16 @@ import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
 
 public class TpCommand {
+    private static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
+    private static final Style ACCEPT_CMD_STYLE = Style.EMPTY
+            .withColor(Formatting.DARK_GREEN)
+            .withUnderline(true)
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"));
+    private static final Style REFUSE_CMD_STYLE = Style.EMPTY
+            .withColor(Formatting.DARK_RED)
+            .withUnderline(true)
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
                                 CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
@@ -50,30 +60,16 @@ public class TpCommand {
             return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
         } else {
             MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
+
             var feedback = target.getDisplayName().copy().setStyle(Style.EMPTY.withColor(Formatting.YELLOW))
-                    .append(Text
-                            .literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
-                                    MinimalTp.settings.request_expiration_interval))
-                            .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
-                    .append(
-                            Text.literal("接受(//tpa)")
-                                    .setStyle(
-                                            Style.EMPTY
-                                                    .withColor(Formatting.DARK_GREEN)
-                                                    .withUnderline(true)
-                                                    .withClickEvent(
-                                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"))))
-                    .append(Text.literal(" 或 ").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)))
-                    .append(
-                            Text.literal("拒绝(//tpr)")
-                                    .setStyle(
-                                            Style.EMPTY
-                                                    .withColor(Formatting.DARK_RED)
-                                                    .withUnderline(true)
-                                                    .withClickEvent(
-                                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"))));
+                    .append(Text.literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
+                            MinimalTp.settings.request_expiration_interval)).setStyle(MSG_STYLE))
+                    .append(Text.literal("接受(//tpa)").setStyle(ACCEPT_CMD_STYLE))
+                    .append(Text.literal(" 或 ").setStyle(MSG_STYLE))
+                    .append(Text.literal("拒绝(//tpr)").setStyle(REFUSE_CMD_STYLE));
             destination.getCommandSource().sendFeedback(feedback, false);
-            source.sendFeedback(Text.literal("已发送传送请求").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
+            source.sendFeedback(Text.literal("已发送传送请求").setStyle(MSG_STYLE), false);
+
             return 1;
         }
     }
