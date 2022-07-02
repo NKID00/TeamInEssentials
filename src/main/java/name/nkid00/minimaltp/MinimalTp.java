@@ -49,22 +49,20 @@ public class MinimalTp implements ModInitializer {
         });
 
         // banner
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            handler.player.getCommandSource().sendFeedback(Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
-        });
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+            handler.player.getCommandSource().sendFeedback(
+                    Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组")
+                            .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false)
+        );
     }
 
     public static void reloadConfig() {
-        try {
-            var reader = new FileReader(configFile);
+        try (var reader = new FileReader(configFile)) {
             settings = GSON.fromJson(reader, Settings.class);
-            reader.close();
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             settings = new Settings();
-            try {
-                var writer = new FileWriter(configFile);
+            try (var writer = new FileWriter(configFile)) {
                 GSON.toJson(settings, writer);
-                writer.close();
             } catch (IOException | JsonIOException e2) {
                 throw new CrashException(new CrashReport("配置文件生成失败", e2));
             }
