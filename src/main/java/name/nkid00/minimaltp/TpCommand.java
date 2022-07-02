@@ -21,7 +21,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 
 public class TpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
-            CommandManager.RegistrationEnvironment environment) {
+                                CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
                 literal("/tp").then(
                         argument("destination", EntityArgumentType.player()).executes(TpCommand::execute)));
@@ -35,18 +35,17 @@ public class TpCommand {
             source.sendError(Text.literal("请不要随意玩耍硬核自研大数据人工智能黑科技模组!"));
             return 0;
         }
+
         var scoreboard = source.getServer().getScoreboard();
         var target_team = scoreboard.getPlayerTeam(target.getEntityName());
         var destination_team = scoreboard.getPlayerTeam(destination.getEntityName());
         var teleportImmediately = false;
         if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
-            // same team
-            if (MinimalTp.settings.immediate_teleportation_in_team) {
-                teleportImmediately = true;
-            }
-        } else if (MinimalTp.settings.immediate_teleportation_between_team) {
-            teleportImmediately = true;
+            teleportImmediately = MinimalTp.settings.immediate_teleportation_in_team;
+        } else {
+            teleportImmediately = MinimalTp.settings.immediate_teleportation_between_team;
         }
+
         if (teleportImmediately) {
             return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
         } else {
