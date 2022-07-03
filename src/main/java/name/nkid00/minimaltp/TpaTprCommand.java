@@ -31,7 +31,8 @@ public class TpaTprCommand {
             if (request.isValid()) {
                 var destMsg = Text.literal("已接受")
                         .append(target.getDisplayName().copy())
-                        .append(Text.literal("的传送请求, 将在%d秒后传送"))
+                        .append(Text.literal(String.format("的传送请求, 将在%d秒后传送",
+                                MinimalTp.settings.teleport_interval)))
                         .setStyle(Settings.MSG_STYLE);
                 source.sendFeedback(destMsg, false);
 
