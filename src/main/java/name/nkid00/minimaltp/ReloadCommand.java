@@ -2,20 +2,17 @@ package name.nkid00.minimaltp;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
+import net.minecraft.text.Text;
+
+import static name.nkid00.minimaltp.Settings.MSG_STYLE;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ReloadCommand {
-    private static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
-
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
