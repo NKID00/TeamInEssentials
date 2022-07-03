@@ -45,16 +45,23 @@ public class TpCommand {
         }
 
         if (teleportImmediately) {
+            var feedback = Text.literal("已将")
+                    .append(target.getDisplayName().copy())
+                    .append(Text.literal("传送至你"));
+            destination.getCommandSource().sendFeedback(feedback, false);
+
             return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
         } else {
             MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
 
-            var feedback = target.getDisplayName().copy().setStyle(Settings.MSG_STYLE)
+            var feedback = Text.literal("")
+                    .append(target.getDisplayName().copy())
                     .append(Text.literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
-                            MinimalTp.settings.request_expiration_interval)).setStyle(Settings.MSG_STYLE))
+                            MinimalTp.settings.request_expiration_interval)))
                     .append(Text.literal("接受(//tpa)").setStyle(Settings.ACCEPT_CMD_STYLE))
-                    .append(Text.literal(" 或 ").setStyle(Settings.MSG_STYLE))
-                    .append(Text.literal("拒绝(//tpr)").setStyle(Settings.REFUSE_CMD_STYLE));
+                    .append(Text.literal(" 或 "))
+                    .append(Text.literal("拒绝(//tpr)").setStyle(Settings.REFUSE_CMD_STYLE))
+                    .setStyle(Settings.MSG_STYLE);
             destination.getCommandSource().sendFeedback(feedback, false);
             source.sendFeedback(Text.literal("已发送传送请求").setStyle(Settings.MSG_STYLE), false);
 
