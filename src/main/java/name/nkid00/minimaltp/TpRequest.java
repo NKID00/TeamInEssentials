@@ -6,12 +6,14 @@ import java.util.TimerTask;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import name.nkid00.minimaltp.mixin.TeleportCommandInvoker;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class TpRequest {
     public final ServerCommandSource source;
-    public final PlayerEntity target;
+    public final ServerPlayerEntity target;
     public final PlayerEntity destination;
     public final long ExpirationTime;
 
@@ -22,7 +24,7 @@ public class TpRequest {
         this.ExpirationTime = System.currentTimeMillis() + MinimalTp.settings.request_expiration_interval * 1000;
     }
 
-    public void execute() throws CommandSyntaxException {
+    public void execute() {
         MinimalTp.TELEPORT_TIMER.schedule(new TpTask(this), MinimalTp.settings.teleport_interval * 1000);
     }
 

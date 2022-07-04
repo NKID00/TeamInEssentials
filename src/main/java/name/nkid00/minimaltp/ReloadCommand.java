@@ -2,15 +2,14 @@ package name.nkid00.minimaltp;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
+import net.minecraft.text.Text;
+
+import static name.nkid00.minimaltp.Settings.MSG_STYLE;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ReloadCommand {
@@ -20,10 +19,10 @@ public class ReloadCommand {
                 literal("/tpreload").requires(source -> source.hasPermissionLevel(2)).executes(ReloadCommand::execute));
     }
 
-    public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
+    public static int execute(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
         MinimalTp.reloadConfig();
-        source.sendFeedback(Text.literal("已重载配置文件").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
+        source.sendFeedback(Text.literal("已重载配置文件").setStyle(MSG_STYLE), false);
         return 1;
     }
 }

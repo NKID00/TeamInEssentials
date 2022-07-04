@@ -7,15 +7,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Style;
+
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class TpaTprCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
-            CommandManager.RegistrationEnvironment environment) {
+                                CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
                 literal("/tpa").executes(TpaTprCommand::TpaExecute));
         dispatcher.register(
@@ -28,13 +27,22 @@ public class TpaTprCommand {
         var uuid = destination.getUuid();
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
+            var target = request.target;
             if (request.isValid()) {
-                source.sendFeedback(Text.literal(String.format("将在%d秒后传送", MinimalTp.settings.teleport_interval))
-                        .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
-                request.source.sendFeedback(
-                        Text.literal(String.format("传送请求被接受, 将在%d秒后传送", MinimalTp.settings.teleport_interval))
-                                .setStyle(Style.EMPTY.withColor(Formatting.GREEN)),
-                        false);
+                var destMsg = Text.literal("已接受")
+                        .append(target.getDisplayName().copy())
+                        .append(Text.literal(String.format("的传送请求, 将在%d秒后传送",
+                                MinimalTp.settings.teleport_interval)))
+                        .setStyle(Settings.MSG_STYLE);
+                source.sendFeedback(destMsg, false);
+
+                var targetMsg = Text.literal("向")
+                        .append(destination.getDisplayName().copy())
+                        .append(Text.literal(String.format("的传送请求被接受, 将在%d秒后传送",
+                                MinimalTp.settings.teleport_interval)))
+                        .setStyle(Settings.ACCEPT_STYLE);
+                request.source.sendFeedback(targetMsg, false);
+
                 request.execute();
                 return 1;
             }
@@ -49,9 +57,20 @@ public class TpaTprCommand {
         var uuid = destination.getUuid();
         if (MinimalTp.TpRequests.containsKey(uuid)) {
             var request = MinimalTp.TpRequests.remove(uuid);
+            var target = request.target;
             if (request.isValid()) {
-                source.sendFeedback(Text.literal("已拒绝传送请求").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false);
-                request.source.sendError(Text.literal("传送请求被拒绝"));
+                var destMsg = Text.literal("已拒绝")
+                        .append(target.getDisplayName().copy())
+                        .append(Text.literal("的传送请求"))
+                        .setStyle(Settings.MSG_STYLE);
+                source.sendFeedback(destMsg, false);
+
+                var targetMsg = Text.literal("向")
+                        .append(destination.getDisplayName().copy())
+                        .append(Text.literal("的传送请求被拒绝"))
+                        .setStyle(Settings.REFUSE_STYLE);
+                request.source.sendError(targetMsg);
+
                 return 1;
             }
         }
