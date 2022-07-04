@@ -53,7 +53,7 @@ public class MinimalTp implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
             handler.player.getCommandSource().sendFeedback(
                     Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组")
-                            .setStyle(Style.EMPTY.withColor(Formatting.YELLOW)), false)
+                            .setStyle(Settings.MSG_STYLE), false)
         );
     }
 
