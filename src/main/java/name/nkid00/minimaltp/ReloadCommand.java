@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 import net.minecraft.text.Text;
 
-import static name.nkid00.minimaltp.Settings.MSG_STYLE;
+import static name.nkid00.minimaltp.MinimalTp.MSG_STYLE;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ReloadCommand {

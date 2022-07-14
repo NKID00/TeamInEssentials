@@ -5,8 +5,9 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -32,8 +33,20 @@ public class MinimalTp implements ModInitializer {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Timer TELEPORT_TIMER = new Timer(true);
 
-    public static File configFile = null;
-    public static Settings settings = null;
+    static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
+    static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
+    static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
+    static final Style ACCEPT_CMD_STYLE = Style.EMPTY
+            .withColor(Formatting.DARK_GREEN)
+            .withUnderline(true)
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"));
+    static final Style REFUSE_CMD_STYLE = Style.EMPTY
+            .withColor(Formatting.DARK_RED)
+            .withUnderline(true)
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
+
+    public static File configFile;
+    public static Settings settings;
     public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
 
     @Override
@@ -50,11 +63,11 @@ public class MinimalTp implements ModInitializer {
         });
 
         // banner
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-            handler.player.getCommandSource().sendFeedback(
-                    Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组")
-                            .setStyle(Settings.MSG_STYLE), false)
-        );
+        ServerPlayConnectionEvents.JOIN
+                .register((handler, sender, server) -> handler.player.getCommandSource().sendFeedback(
+                        Text.literal("输入//tp来使用硬核自研大数据人工智能黑科技模组")
+                                .setStyle(MinimalTp.MSG_STYLE),
+                        false));
     }
 
     public static void reloadConfig() {
