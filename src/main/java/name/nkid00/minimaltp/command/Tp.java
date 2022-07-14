@@ -1,9 +1,11 @@
-package name.nkid00.minimaltp;
+package name.nkid00.minimaltp.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import name.nkid00.minimaltp.MinimalTp;
+import name.nkid00.minimaltp.TpRequest;
 import name.nkid00.minimaltp.mixin.TeleportCommandInvoker;
 
 import net.minecraft.command.CommandRegistryAccess;
@@ -17,12 +19,12 @@ import net.minecraft.text.Text;
 
 import java.util.Collections;
 
-public class TpCommand {
+public class Tp {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
                 literal("/tp").then(
-                        argument("destination", EntityArgumentType.player()).executes(TpCommand::execute)));
+                        argument("destination", EntityArgumentType.player()).executes(Tp::execute)));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {

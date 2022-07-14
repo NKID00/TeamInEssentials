@@ -1,9 +1,10 @@
-package name.nkid00.minimaltp;
+package name.nkid00.minimaltp.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import name.nkid00.minimaltp.MinimalTp;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -12,17 +13,15 @@ import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class TpaTprCommand {
+public class Tpa {
         public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
                         CommandRegistryAccess registryAccess,
                         CommandManager.RegistrationEnvironment environment) {
                 dispatcher.register(
-                                literal("/tpa").executes(TpaTprCommand::TpaExecute));
-                dispatcher.register(
-                                literal("/tpr").executes(TpaTprCommand::TprExecute));
+                                literal("/tpa").executes(Tpa::execute));
         }
 
-        public static int TpaExecute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
+        public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
                 var source = c.getSource();
                 var destination = source.getPlayerOrThrow();
                 var uuid = destination.getUuid();

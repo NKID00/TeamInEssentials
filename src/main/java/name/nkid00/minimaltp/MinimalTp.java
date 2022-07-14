@@ -28,19 +28,24 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import name.nkid00.minimaltp.command.Reload;
+import name.nkid00.minimaltp.command.Tp;
+import name.nkid00.minimaltp.command.Tpa;
+import name.nkid00.minimaltp.command.Tpr;
+
 public class MinimalTp implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("minimaltp");
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Timer TELEPORT_TIMER = new Timer(true);
 
-    static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
-    static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
-    static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
-    static final Style ACCEPT_CMD_STYLE = Style.EMPTY
+    public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
+    public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
+    public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
+    public static final Style ACCEPT_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_GREEN)
             .withUnderline(true)
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"));
-    static final Style REFUSE_CMD_STYLE = Style.EMPTY
+    public static final Style REFUSE_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_RED)
             .withUnderline(true)
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
@@ -52,9 +57,10 @@ public class MinimalTp implements ModInitializer {
     @Override
     public void onInitialize() throws CrashException {
         // commands
-        CommandRegistrationCallback.EVENT.register(TpCommand::register);
-        CommandRegistrationCallback.EVENT.register(TpaTprCommand::register);
-        CommandRegistrationCallback.EVENT.register(ReloadCommand::register);
+        CommandRegistrationCallback.EVENT.register(Tp::register);
+        CommandRegistrationCallback.EVENT.register(Tpa::register);
+        CommandRegistrationCallback.EVENT.register(Tpr::register);
+        CommandRegistrationCallback.EVENT.register(Reload::register);
 
         // config
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
