@@ -12,17 +12,16 @@ import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class Reload {
+public class HelpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
-                literal("/reload").requires(source -> source.hasPermissionLevel(2)).executes(Reload::execute));
+                literal("/help").requires(source -> source.hasPermissionLevel(2)).executes(HelpCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
-        MinimalTp.reloadConfig();
-        source.sendFeedback(Text.literal("已重载配置文件").setStyle(MinimalTp.MSG_STYLE), false);
+        source.sendFeedback(Text.literal("帮助 -> //help").setStyle(MinimalTp.MSG_STYLE), false);
         return 1;
     }
 }

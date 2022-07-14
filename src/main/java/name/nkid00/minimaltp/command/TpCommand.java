@@ -19,12 +19,12 @@ import net.minecraft.text.Text;
 
 import java.util.Collections;
 
-public class Tp {
+public class TpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
                 literal("/tp").then(
-                        argument("destination", EntityArgumentType.player()).executes(Tp::execute)));
+                        argument("destination", EntityArgumentType.player()).executes(TpCommand::execute)));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
@@ -42,9 +42,9 @@ public class Tp {
 
         var teleportImmediately = false;
         if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
-            teleportImmediately = MinimalTp.settings.immediate_teleportation_in_team;
+            teleportImmediately = MinimalTp.options.immediate_teleportation_in_team;
         } else {
-            teleportImmediately = MinimalTp.settings.immediate_teleportation_between_team;
+            teleportImmediately = MinimalTp.options.immediate_teleportation_between_team;
         }
 
         if (teleportImmediately) {
@@ -60,10 +60,10 @@ public class Tp {
             var feedback = Text.literal("")
                     .append(target.getDisplayName().copy())
                     .append(Text.literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
-                            MinimalTp.settings.request_expiration_interval)))
-                    .append(Text.literal("接受(//tpa)").setStyle(MinimalTp.ACCEPT_CMD_STYLE))
+                            MinimalTp.options.request_expiration_interval)))
+                    .append(Text.literal("接受(//tpa)").setStyle(MinimalTp.CLICK_TPA_CMD_STYLE))
                     .append(Text.literal(" 或 "))
-                    .append(Text.literal("拒绝(//tpr)").setStyle(MinimalTp.REFUSE_CMD_STYLE))
+                    .append(Text.literal("拒绝(//tpr)").setStyle(MinimalTp.CLICK_TPR_CMD_STYLE))
                     .setStyle(MinimalTp.MSG_STYLE);
             destination.getCommandSource().sendFeedback(feedback, false);
             source.sendFeedback(Text.literal("已发送传送请求").setStyle(MinimalTp.MSG_STYLE), false);
