@@ -32,14 +32,14 @@ public class TpaCommand {
                                 var destMsg = Text.literal("已接受")
                                                 .append(target.getDisplayName().copy())
                                                 .append(Text.literal(String.format("的传送请求, 将在%d秒后传送",
-                                                                MinimalTp.options.teleport_interval)))
+                                                                MinimalTp.options.teleportInterval)))
                                                 .setStyle(MinimalTp.MSG_STYLE);
                                 source.sendFeedback(destMsg, false);
 
                                 var targetMsg = Text.literal("向")
                                                 .append(destination.getDisplayName().copy())
                                                 .append(Text.literal(String.format("的传送请求被接受, 将在%d秒后传送",
-                                                                MinimalTp.options.teleport_interval)))
+                                                                MinimalTp.options.teleportInterval)))
                                                 .setStyle(MinimalTp.ACCEPT_STYLE);
                                 request.source.sendFeedback(targetMsg, false);
 

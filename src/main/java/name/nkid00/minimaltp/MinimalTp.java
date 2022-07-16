@@ -18,6 +18,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -29,15 +30,17 @@ import name.nkid00.minimaltp.command.TprCommand;
 
 public class MinimalTp implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("MinimalTp");
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
     public static final Timer TELEPORT_TIMER = new Timer(true);
 
     public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
     public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
     public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
     public static final Style CLICK_HELP_CMD_STYLE = Style.EMPTY
-            .withUnderline(true)
-            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"));
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//help"));
     public static final Style CLICK_TPA_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_GREEN)
             .withUnderline(true)

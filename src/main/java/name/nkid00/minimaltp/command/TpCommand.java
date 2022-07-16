@@ -42,9 +42,9 @@ public class TpCommand {
 
         var teleportImmediately = false;
         if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
-            teleportImmediately = MinimalTp.options.immediate_teleportation_in_team;
+            teleportImmediately = MinimalTp.options.immediateTeleportationInTeam;
         } else {
-            teleportImmediately = MinimalTp.options.immediate_teleportation_between_team;
+            teleportImmediately = MinimalTp.options.immediateTeleportationBetweenTeam;
         }
 
         if (teleportImmediately) {
@@ -60,7 +60,7 @@ public class TpCommand {
             var feedback = Text.literal("")
                     .append(target.getDisplayName().copy())
                     .append(Text.literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
-                            MinimalTp.options.request_expiration_interval)))
+                            MinimalTp.options.requestExpirationInterval)))
                     .append(Text.literal("接受(//tpa)").setStyle(MinimalTp.CLICK_TPA_CMD_STYLE))
                     .append(Text.literal(" 或 "))
                     .append(Text.literal("拒绝(//tpr)").setStyle(MinimalTp.CLICK_TPR_CMD_STYLE))

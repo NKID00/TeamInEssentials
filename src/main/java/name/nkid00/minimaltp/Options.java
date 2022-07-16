@@ -15,10 +15,11 @@ import net.minecraft.util.crash.CrashReport;
 public class Options {
     public static File file;
 
-    public long teleport_interval = 3; // seconds
-    public long request_expiration_interval = 120; // seconds
-    public boolean immediate_teleportation_in_team = true;
-    public boolean immediate_teleportation_between_team = false;
+    public long teleportInterval = 3; // seconds
+    public long requestExpirationInterval = 120; // seconds
+    public boolean immediateTeleportationInTeam = true;
+    public boolean immediateTeleportationBetweenTeam = false;
+    public boolean allowFormattingCode = true;
 
     public static void reload() {
         MinimalTp.LOGGER.info("Loading options");
@@ -27,11 +28,12 @@ public class Options {
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             MinimalTp.LOGGER.info("Generating default options");
             MinimalTp.options = new Options();
-            try (var writer = new FileWriter(file)) {
-                MinimalTp.GSON.toJson(MinimalTp.options, writer);
-            } catch (IOException | JsonIOException e2) {
-                throw new CrashException(new CrashReport("配置文件生成失败", e2));
-            }
+        }
+        MinimalTp.LOGGER.info("Formatting options");
+        try (var writer = new FileWriter(file)) {
+            MinimalTp.GSON.toJson(MinimalTp.options, writer);
+        } catch (IOException | JsonIOException e2) {
+            throw new CrashException(new CrashReport("配置文件生成失败", e2));
         }
     }
 }
