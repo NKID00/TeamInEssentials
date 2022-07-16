@@ -7,7 +7,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.HashMap;
@@ -38,15 +40,15 @@ public class MinimalTp implements ModInitializer {
     public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
     public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
     public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
-    public static final Style CLICK_HELP_CMD_STYLE = Style.EMPTY
-            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//help"));
     public static final Style CLICK_TPA_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_GREEN)
             .withUnderline(true)
+            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"));
     public static final Style CLICK_TPR_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_RED)
             .withUnderline(true)
+            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
     public static final boolean POTENTIAL_COMMAND_CONFLICT = FabricLoader.getInstance().isModLoaded("worldedit");
 

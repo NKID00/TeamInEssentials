@@ -11,13 +11,12 @@ public class Banner {
         handler.player.sendMessage(
                 Text.empty()
                         .setStyle(MinimalTp.MSG_STYLE)
-                        .append("输入")
-                        .append(Text.literal("//help").setStyle(MinimalTp.CLICK_HELP_CMD_STYLE))
-                        .append("来使用硬核自研大数据人工智能黑科技模组"),
+                        .append("输入//help来使用硬核自研大数据人工智能黑科技模组"),
                 MessageType.SYSTEM);
     }
 
-    public static void registerPotentialCommandConflict(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+    public static void registerPotentialCommandConflict(ServerPlayNetworkHandler handler, PacketSender sender,
+            MinecraftServer server) {
         handler.player.sendMessage(
                 Text.empty()
                         .setStyle(MinimalTp.MSG_STYLE)
