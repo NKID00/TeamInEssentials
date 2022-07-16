@@ -13,16 +13,17 @@ import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class ReloadCommand {
+public class ReloadOptionsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
-                literal("/reload").requires(source -> source.hasPermissionLevel(2)).executes(ReloadCommand::execute));
+                literal("/reloadoptions").requires(source -> source.hasPermissionLevel(2))
+                        .executes(ReloadOptionsCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
-        Options.reload();
+        Options.load();
         source.sendFeedback(Text.literal("已重载配置文件").setStyle(MinimalTp.MSG_STYLE), false);
         return 1;
     }

@@ -4,13 +4,12 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.crash.CrashException;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.UUID;
@@ -23,7 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import name.nkid00.minimaltp.command.HelpCommand;
-import name.nkid00.minimaltp.command.ReloadCommand;
+import name.nkid00.minimaltp.command.ReloadOptionsCommand;
 import name.nkid00.minimaltp.command.TpCommand;
 import name.nkid00.minimaltp.command.TpaCommand;
 import name.nkid00.minimaltp.command.TprCommand;
@@ -49,38 +48,43 @@ public class MinimalTp implements ModInitializer {
             .withColor(Formatting.DARK_RED)
             .withUnderline(true)
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
+    public static final boolean POTENTIAL_COMMAND_CONFLICT = FabricLoader.getInstance().isModLoaded("worldedit");
 
     public static Options options;
-    public static Data database;
+    public static Data data;
     public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
 
     @Override
-    public void onInitialize() throws CrashException {
-        // options and database
-        ServerLifecycleEvents.SERVER_STARTING.register((server) -> {
-            var base = new File(server.getRunDirectory(), "minimaltp");
-            if (!base.exists()) {
-                base.mkdir();
-            }
+    public void onInitialize() {
+        var loader = FabricLoader.getInstance();
 
-            Options.file = new File(base, "options.json");
-            Options.reload();
+        // options (static and shared globally)
+        Options.file = loader.getConfigDir().resolve("minimaltp.json").toFile();
+        Options.load();
 
-            Data.file = new File(base, "data.db");
-            Data.load();
-        });
+        // data (dynamic and stored respectively for each world)
+        Data.file = loader.getConfigDir().resolve("minimaltp/data.json").toFile();
+        Data.load();
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
             Data.save();
         });
 
         // commands
-        CommandRegistrationCallback.EVENT.register(HelpCommand::register);
-        CommandRegistrationCallback.EVENT.register(ReloadCommand::register);
-        CommandRegistrationCallback.EVENT.register(TpCommand::register);
-        CommandRegistrationCallback.EVENT.register(TpaCommand::register);
-        CommandRegistrationCallback.EVENT.register(TprCommand::register);
+        if (POTENTIAL_COMMAND_CONFLICT) {
+            MinimalTp.LOGGER.warn("Commands are disabled due to potential conflict with WorldEdit");
+        } else {
+            CommandRegistrationCallback.EVENT.register(HelpCommand::register);
+            CommandRegistrationCallback.EVENT.register(ReloadOptionsCommand::register);
+            CommandRegistrationCallback.EVENT.register(TpCommand::register);
+            CommandRegistrationCallback.EVENT.register(TpaCommand::register);
+            CommandRegistrationCallback.EVENT.register(TprCommand::register);
+        }
 
-        // banner
-        ServerPlayConnectionEvents.JOIN.register(Banner::register);
+        // banners
+        if (POTENTIAL_COMMAND_CONFLICT) {
+            ServerPlayConnectionEvents.JOIN.register(Banner::registerPotentialCommandConflict);
+        } else {
+            ServerPlayConnectionEvents.JOIN.register(Banner::register);
+        }
     }
 }

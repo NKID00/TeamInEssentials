@@ -16,4 +16,12 @@ public class Banner {
                         .append("来使用硬核自研大数据人工智能黑科技模组"),
                 MessageType.SYSTEM);
     }
+
+    public static void registerPotentialCommandConflict(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
+        handler.player.sendMessage(
+                Text.empty()
+                        .setStyle(MinimalTp.MSG_STYLE)
+                        .append("正在使用硬核自研大数据人工智能黑科技模组"),
+                MessageType.SYSTEM);
+    }
 }

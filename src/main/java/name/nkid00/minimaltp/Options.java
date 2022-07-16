@@ -21,7 +21,7 @@ public class Options {
     public boolean immediateTeleportationBetweenTeam = false;
     public boolean allowFormattingCode = true;
 
-    public static void reload() {
+    public static void load() {
         MinimalTp.LOGGER.info("Loading options");
         try (var reader = new FileReader(file)) {
             MinimalTp.options = MinimalTp.GSON.fromJson(reader, Options.class);
