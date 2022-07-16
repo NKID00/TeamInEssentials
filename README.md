@@ -12,16 +12,20 @@ The latest Fabric Loader and Fabric API is required.
 
 The mod only needs to be installed on server-side for multiplayer.
 
-# Roadmap
+## Roadmap
 
-- [ ] //help
-- [ ] //note
-- [ ] //notice
-- [ ] //task
-- [x] //tp
-- [x] //tpa
-- [x] //tpr
-- [ ] //waypoint
+- commands
+  - [ ] //help
+  - [ ] //note
+  - [ ] //notice
+  - [ ] //task
+  - [x] //tp
+  - [x] //tpa
+  - [x] //tpr
+  - [ ] //waypoint
+- tweaks
+  - [x] allow formatting code
+    - [ ] hotkey (Ctrl + & or Ctrl + 7)
 
 ## License
 
