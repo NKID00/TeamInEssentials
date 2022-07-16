@@ -48,7 +48,7 @@ public class MinimalTp implements ModInitializer {
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
 
     public static Options options;
-    public static Database database;
+    public static Data database;
     public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
 
     @Override
@@ -63,11 +63,11 @@ public class MinimalTp implements ModInitializer {
             Options.file = new File(base, "options.json");
             Options.reload();
 
-            Database.file = new File(base, "data.db");
-            Database.connect();
+            Data.file = new File(base, "data.db");
+            Data.load();
         });
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
-            Database.close();
+            Data.save();
         });
 
         // commands

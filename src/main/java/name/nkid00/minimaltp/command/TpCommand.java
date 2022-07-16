@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import name.nkid00.minimaltp.MinimalTp;
 import name.nkid00.minimaltp.TpRequest;
-import name.nkid00.minimaltp.mixin.TeleportCommandInvoker;
+import name.nkid00.minimaltp.mixin.TeleportCommandMixin;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -53,7 +53,7 @@ public class TpCommand {
                     .append(Text.literal("传送至你"));
             destination.getCommandSource().sendFeedback(feedback, false);
 
-            return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
+            return TeleportCommandMixin.execute(source, Collections.singleton(target), destination);
         } else {
             MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
 

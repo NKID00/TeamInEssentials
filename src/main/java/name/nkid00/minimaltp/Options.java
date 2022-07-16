@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 
-// stores options that writes into minimaltp/options.json
+// stores options in `minimaltp/options.json`
 public class Options {
     public static File file;
 
@@ -21,11 +21,11 @@ public class Options {
     public boolean immediate_teleportation_between_team = false;
 
     public static void reload() {
-        MinimalTp.LOGGER.info("Loading config");
+        MinimalTp.LOGGER.info("Loading options");
         try (var reader = new FileReader(file)) {
             MinimalTp.options = MinimalTp.GSON.fromJson(reader, Options.class);
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
-            MinimalTp.LOGGER.info("Generating default config");
+            MinimalTp.LOGGER.info("Generating default options");
             MinimalTp.options = new Options();
             try (var writer = new FileWriter(file)) {
                 MinimalTp.GSON.toJson(MinimalTp.options, writer);

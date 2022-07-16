@@ -5,7 +5,7 @@ import java.util.TimerTask;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import name.nkid00.minimaltp.mixin.TeleportCommandInvoker;
+import name.nkid00.minimaltp.mixin.TeleportCommandMixin;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -29,7 +29,7 @@ public class TpRequest {
     }
 
     public int executeImmediately() throws CommandSyntaxException {
-        return TeleportCommandInvoker.execute(source, Collections.singleton(target), destination);
+        return TeleportCommandMixin.execute(source, Collections.singleton(target), destination);
     }
 
     public boolean isValid() {

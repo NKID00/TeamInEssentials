@@ -4,9 +4,12 @@
   "package": "name.nkid00.minimaltp.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "TeleportCommandInvoker"
+    "TeleportCommandMixin",
+    "SharedConstantsMixin"
   ],
-  "client": [],
+  "client": [
+    "SharedConstantsMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
