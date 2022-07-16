@@ -16,8 +16,10 @@ The mod only needs to be installed on server-side for multiplayer.
 
 - commands
   - [ ] //help
+  - [ ] //config
   - [ ] //note
   - [ ] //notice
+  - [x] //reloadoptions
   - [ ] //task
   - [x] //tp
   - [x] //tpa
@@ -25,7 +27,6 @@ The mod only needs to be installed on server-side for multiplayer.
   - [ ] //waypoint
 - tweaks
   - [x] allow formatting code
-    - [ ] hotkey (Ctrl + & or Ctrl + 7)
 
 ## License
 
