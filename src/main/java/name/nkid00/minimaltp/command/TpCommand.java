@@ -6,18 +6,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import name.nkid00.minimaltp.MinimalTp;
 import name.nkid00.minimaltp.TpRequest;
-import name.nkid00.minimaltp.mixin.TeleportCommandMixin;
+import name.nkid00.minimaltp.helper.TpHelper;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 import net.minecraft.text.Text;
-
-import java.util.Collections;
 
 public class TpCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
@@ -48,14 +47,9 @@ public class TpCommand {
         }
 
         if (teleportImmediately) {
-            var feedback = Text.literal("已将")
-                    .append(target.getDisplayName().copy())
-                    .append(Text.literal("传送至你"));
-            destination.getCommandSource().sendFeedback(feedback, false);
-
-            return TeleportCommandMixin.execute(source, Collections.singleton(target), destination);
+            return TpHelper.teleportImmediately(target, destination);
         } else {
-            MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source, destination));
+            MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source.getPlayerOrThrow(), destination));
 
             var feedback = Text.literal("")
                     .append(target.getDisplayName().copy())

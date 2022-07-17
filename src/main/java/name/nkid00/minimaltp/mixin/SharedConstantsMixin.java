@@ -5,9 +5,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import net.minecraft.SharedConstants;
-
 import name.nkid00.minimaltp.MinimalTp;
+
+import net.minecraft.SharedConstants;
 
 @Mixin(SharedConstants.class)
 public class SharedConstantsMixin {

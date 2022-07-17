@@ -1,53 +1,25 @@
 package name.nkid00.minimaltp;
 
-import java.util.Collections;
-import java.util.TimerTask;
+import name.nkid00.minimaltp.helper.TpHelper;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
-import name.nkid00.minimaltp.mixin.TeleportCommandMixin;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class TpRequest {
-    public final ServerCommandSource source;
     public final ServerPlayerEntity target;
-    public final PlayerEntity destination;
+    public final ServerPlayerEntity destination;
     public final long ExpirationTime;
 
-    public TpRequest(ServerCommandSource source, PlayerEntity destination) throws CommandSyntaxException {
-        this.source = source;
-        this.target = source.getPlayerOrThrow();
+    public TpRequest(ServerPlayerEntity target, ServerPlayerEntity destination) {
+        this.target = target;
         this.destination = destination;
         this.ExpirationTime = System.currentTimeMillis() + MinimalTp.options.requestExpirationInterval * 1000;
     }
 
     public void execute() {
-        MinimalTp.TELEPORT_TIMER.schedule(new TpTask(this), MinimalTp.options.teleportInterval * 1000);
-    }
-
-    public int executeImmediately() throws CommandSyntaxException {
-        return TeleportCommandMixin.execute(source, Collections.singleton(target), destination);
+        TpHelper.teleportTimed(target, destination);
     }
 
     public boolean isValid() {
         return System.currentTimeMillis() < this.ExpirationTime;
-    }
-
-    class TpTask extends TimerTask {
-        private final TpRequest request;
-
-        public TpTask(TpRequest request) {
-            this.request = request;
-        }
-
-        public void run() {
-            try {
-                request.executeImmediately();
-            } catch (CommandSyntaxException e) {
-            }
-        }
     }
 }

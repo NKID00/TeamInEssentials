@@ -4,6 +4,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
+
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
 public class Banner {
