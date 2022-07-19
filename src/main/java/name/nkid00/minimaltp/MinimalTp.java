@@ -12,6 +12,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.UUID;
@@ -55,6 +56,7 @@ public class MinimalTp implements ModInitializer {
     public static Options options;
     public static Data data;
     public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
+    public static ArrayList<Waypoint> waypoints = new ArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -67,9 +69,7 @@ public class MinimalTp implements ModInitializer {
         // data (dynamic and stored respectively for each world)
         Data.file = loader.getConfigDir().resolve("minimaltp/data.json").toFile();
         Data.load();
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> {
-            Data.save();
-        });
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> Data.save());
 
         // commands
         if (POTENTIAL_COMMAND_CONFLICT) {

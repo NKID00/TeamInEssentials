@@ -19,7 +19,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 import net.minecraft.text.Text;
 
 public class TpCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
+            CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
                 literal("/tp").then(
