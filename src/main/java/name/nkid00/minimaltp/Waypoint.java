@@ -1,20 +1,19 @@
 package name.nkid00.minimaltp;
 
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.UUID;
 
 public class Waypoint {
     String name;
     final BlockPos position;
-    final ServerWorld world;
-    final UUID recorder;
+    final Identifier dimension;
+    final Text recorder;
 
-    public Waypoint(String name, BlockPos position, ServerWorld world, UUID recorder) {
+    public Waypoint(String name, BlockPos position, Identifier dimension, Text recorder) {
         this.name = name;
         this.position = position;
-        this.world = world;
+        this.dimension = dimension;
         this.recorder = recorder;
     }
 
@@ -30,11 +29,11 @@ public class Waypoint {
         return position;
     }
 
-    public ServerWorld getWorld() {
-        return world;
+    public Identifier getDimension() {
+        return dimension;
     }
 
-    public UUID getRecorder() {
+    public Text getRecorder() {
         return recorder;
     }
 }

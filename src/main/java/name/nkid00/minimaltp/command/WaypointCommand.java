@@ -12,10 +12,9 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.UUID;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -58,13 +57,13 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         var source = c.getSource();
-        var world = source.getWorld();
+        var dimension = source.getWorld().getDimension().effects();
 
         var player = source.getPlayerOrThrow();
         var position = player.getBlockPos();
-        var recorder = player.getUuid();
+        var recorder = player.getDisplayName().copy();
 
-        return add(name, position, world, recorder) ? 1 : 0;
+        return add(name, position, dimension, recorder) ? 1 : 0;
     }
 
     public static int executeAddGiven(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
@@ -72,14 +71,15 @@ public class WaypointCommand {
         var position = BlockPosArgumentType.getBlockPos(c, "position");
 
         var source = c.getSource();
-        var world = source.getWorld();
-        var recorder = source.getPlayerOrThrow().getUuid();
+        var dimension = source.getWorld().getDimension().effects();
 
-        return add(name, position, world, recorder) ? 1 : 0;
+        var recorder = source.getPlayerOrThrow().getDisplayName().copy();
+
+        return add(name, position, dimension, recorder) ? 1 : 0;
     }
 
-    private static boolean add(String name, BlockPos position, ServerWorld world, UUID recorder) {
-        return MinimalTp.waypoints.add(new Waypoint(name, position, world, recorder));
+    private static boolean add(String name, BlockPos position, Identifier dimension, Text recorder) {
+        return MinimalTp.waypoints.add(new Waypoint(name, position, dimension, recorder));
     }
 
     public static int executeInfo(CommandContext<ServerCommandSource> c) {
@@ -104,7 +104,7 @@ public class WaypointCommand {
         if (source.hasPermissionLevel(2))
             return MinimalTp.waypoints.removeIf(waypoint -> waypoint.getName().equals(name)) ? 1 : 0;
 
-        var executor = source.getPlayerOrThrow().getUuid();
+        var executor = source.getPlayerOrThrow().getDisplayName().copy();
         return MinimalTp.waypoints.removeIf(
                 waypoint -> waypoint.getName().equals(name) && waypoint.getRecorder().equals(executor)
         ) ? 1 : 0;
@@ -115,7 +115,7 @@ public class WaypointCommand {
         var newName = StringArgumentType.getString(c, "new name");
 
         for (Waypoint waypoint : MinimalTp.waypoints) {
-            if (waypoint.getName().equals(oldName)){
+            if (waypoint.getName().equals(oldName)) {
                 waypoint.setName(newName);
                 return 1;
             }
