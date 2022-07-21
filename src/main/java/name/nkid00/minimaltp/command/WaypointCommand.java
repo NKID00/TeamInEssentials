@@ -97,13 +97,43 @@ public class WaypointCommand {
     }
 
     public static int executeInfo(CommandContext<ServerCommandSource> c) {
-        //TODO
+        var name = StringArgumentType.getString(c, "name");
+
+        for (Waypoint waypoint : MinimalTp.waypoints) {
+            if (waypoint.getName().equals(name)) {
+                var infoMsg = Text.literal("坐标" + name
+                                + ": " + waypoint.getDimension().toString()
+                                + ", " + waypoint.getPosition().toShortString() + ", "
+                                + "记录者:")
+                        .append(waypoint.getRecorder())
+                        .setStyle(MinimalTp.MSG_STYLE);
+                c.getSource().sendFeedback(infoMsg, false);
+                return 1;
+            }
+        }
+
+        c.getSource().sendError(Text.literal("未找到共享坐标" + name));
         return 0;
     }
 
     public static int executeList(CommandContext<ServerCommandSource> c) {
-        //TODO
-        return 0;
+        var source = c.getSource();
+
+        if (MinimalTp.waypoints.size() == 0) {
+            source.sendError(Text.literal("无共享坐标"));
+        } else {
+            var listMsg = Text.literal("共有" + MinimalTp.waypoints.size() + "个共享坐标:")
+                    .setStyle(MinimalTp.MSG_STYLE);
+
+            ArrayList<String> list = new ArrayList<>(MinimalTp.waypoints.size());
+            for (Waypoint waypoint : MinimalTp.waypoints) {
+                list.add(waypoint.getName());
+            }
+
+            listMsg.append(String.join(", ", list));
+            source.sendFeedback(listMsg, false);
+        }
+        return 1;
     }
 
     public static int executeReceive(CommandContext<ServerCommandSource> c) {
