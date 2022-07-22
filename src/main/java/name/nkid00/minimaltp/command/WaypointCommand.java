@@ -137,7 +137,31 @@ public class WaypointCommand {
     }
 
     public static int executeReceive(CommandContext<ServerCommandSource> c) {
-        //TODO
+        var name = StringArgumentType.getString(c, "name");
+
+        for (Waypoint waypoint : MinimalTp.waypoints) {
+            if (waypoint.getName().equals(name)){
+                String dimension = waypoint.getDimension().toString().split(":")[1] ;
+                String[] contents = {"xaero-waypoint",
+                        waypoint.getName(),
+                        waypoint.getName().substring(0, 1),
+                        String.valueOf(waypoint.getPosition().getX()),
+                        String.valueOf(waypoint.getPosition().getY()),
+                        String.valueOf(waypoint.getPosition().getZ()),
+                        String.valueOf(MinimalTp.color),
+                        "false:0",
+                        "Internal-" + dimension + "-waypoints"
+                };
+
+                if (++MinimalTp.color > 15) MinimalTp.color = 0;
+
+                var rcvMsg = Text.literal(String.join(":", contents));
+                c.getSource().sendFeedback(rcvMsg, false);
+                return 1;
+            }
+        }
+
+        c.getSource().sendError(Text.literal("未找到共享坐标" + name));
         return 0;
     }
 

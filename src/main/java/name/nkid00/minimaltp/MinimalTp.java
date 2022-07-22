@@ -57,6 +57,7 @@ public class MinimalTp implements ModInitializer {
     public static Data data;
     public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
     public static ArrayList<Waypoint> waypoints = new ArrayList<>();
+    public static int color;
 
     @Override
     public void onInitialize() {
