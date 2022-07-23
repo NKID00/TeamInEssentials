@@ -13,8 +13,7 @@ import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+
 import java.util.ArrayList;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -50,8 +49,19 @@ public class WaypointCommand {
     }
 
     public static int executeAddShared(CommandContext<ServerCommandSource> c) {
-        //TODO
-        return 0;
+        Waypoint w = MinimalTp.lastWaypoint;
+        if (w == null) {
+            c.getSource().sendError(Text.literal("无共享坐标"));
+            return 0;
+        } else if (addReversed(w)) {
+            return 0;
+        }
+
+        var addMsg = Text.literal("已共享坐标" + w.getName()
+                        + "(" + w.getDimension().toString() + ", " + w.getPosition().toShortString() + ")")
+                .setStyle(MinimalTp.MSG_STYLE);
+        c.getSource().sendFeedback(addMsg, true);
+        return 1;
     }
 
     public static int executeAddCurrent(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
@@ -64,7 +74,7 @@ public class WaypointCommand {
         var position = player.getBlockPos();
         var recorder = player.getDisplayName().copy();
 
-        if (addReversed(name, position, dimension, recorder)) return 0;
+        if (addReversed(new Waypoint(name, position, dimension, recorder))) return 0;
 
         var addMsg = Text.literal("已共享坐标" + name
                         + "(" + dimension.toString() + ", " + position.toShortString() + ")")
@@ -82,7 +92,7 @@ public class WaypointCommand {
 
         var recorder = source.getPlayerOrThrow().getDisplayName().copy();
 
-        if (addReversed(name, position, dimension, recorder)) return 0;
+        if (addReversed(new Waypoint(name, position, dimension, recorder))) return 0;
 
         var addMsg = Text.empty()
                 .append(recorder)
@@ -92,8 +102,8 @@ public class WaypointCommand {
         return 1;
     }
 
-    private static boolean addReversed(String name, BlockPos position, Identifier dimension, Text recorder) {
-        return !MinimalTp.waypoints.add(new Waypoint(name, position, dimension, recorder));
+    private static boolean addReversed(Waypoint w) {
+        return !MinimalTp.waypoints.add(w);
     }
 
     public static int executeInfo(CommandContext<ServerCommandSource> c) {
@@ -140,8 +150,8 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         for (Waypoint waypoint : MinimalTp.waypoints) {
-            if (waypoint.getName().equals(name)){
-                String dimension = waypoint.getDimension().toString().split(":")[1] ;
+            if (waypoint.getName().equals(name)) {
+                String dimension = waypoint.getDimension().toString().split(":")[1];
                 String[] contents = {"xaero-waypoint",
                         waypoint.getName(),
                         waypoint.getName().substring(0, 1),
@@ -204,7 +214,7 @@ public class WaypointCommand {
             if (waypoint.getName().equals(oldName)) {
                 waypoint.setName(newName);
 
-                var renameMsg = Text.literal("已将坐标" + oldName +"重命名为" + newName)
+                var renameMsg = Text.literal("已将坐标" + oldName + "重命名为" + newName)
                         .setStyle(MinimalTp.MSG_STYLE);
                 c.getSource().sendFeedback(renameMsg, true);
                 return 1;

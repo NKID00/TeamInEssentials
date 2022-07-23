@@ -24,11 +24,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import name.nkid00.minimaltp.command.HelpCommand;
-import name.nkid00.minimaltp.command.ReloadOptionsCommand;
-import name.nkid00.minimaltp.command.TpCommand;
-import name.nkid00.minimaltp.command.TpaCommand;
-import name.nkid00.minimaltp.command.TprCommand;
+import name.nkid00.minimaltp.command.*;
 
 public class MinimalTp implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("MinimalTp");
@@ -58,6 +54,7 @@ public class MinimalTp implements ModInitializer {
     public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
     public static ArrayList<Waypoint> waypoints = new ArrayList<>();
     public static int color;
+    public static Waypoint lastWaypoint;
 
     @Override
     public void onInitialize() {
@@ -81,6 +78,7 @@ public class MinimalTp implements ModInitializer {
             CommandRegistrationCallback.EVENT.register(TpCommand::register);
             CommandRegistrationCallback.EVENT.register(TpaCommand::register);
             CommandRegistrationCallback.EVENT.register(TprCommand::register);
+            CommandRegistrationCallback.EVENT.register(WaypointCommand::register);
         }
 
         // banners
