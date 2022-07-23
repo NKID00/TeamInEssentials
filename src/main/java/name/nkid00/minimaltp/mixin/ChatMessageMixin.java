@@ -60,7 +60,8 @@ public class ChatMessageMixin {
             try {
                 position = new BlockPos(parseInt(params[3]), parseInt(params[4]), parseInt(params[5]));
                 dimension = new Identifier("minecraft", params[9].split("-")[1]);
-                MinimalTp.lastWaypoint = new Waypoint(params[1], position, dimension, player.getDisplayName().copy());
+                MinimalTp.lastWaypoint = new Waypoint(position, dimension, player.getDisplayName().copy());
+                MinimalTp.lastName = params[1];
             } catch (NumberFormatException | InvalidIdentifierException ignored) {
             }
         }

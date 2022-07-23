@@ -14,7 +14,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -27,24 +27,24 @@ public class WaypointCommand {
                 .executes(WaypointCommand::executeList)
                 .then(literal("add")
                         .executes(WaypointCommand::executeAddShared)
-                        .then(argument("name", StringArgumentType.word())
+                        .then(argument("name", StringArgumentType.string())
                                 .executes(WaypointCommand::executeAddCurrent)
                                 .then(argument("position", BlockPosArgumentType.blockPos())
                                         .executes(WaypointCommand::executeAddGiven))))
                 .then(literal("info")
-                        .then(argument("name", StringArgumentType.word())
+                        .then(argument("name", StringArgumentType.string())
                                 .executes(WaypointCommand::executeInfo)))
                 .then(literal("list")
                         .executes(WaypointCommand::executeList))
                 .then(literal("receive")
-                        .then(argument("name", StringArgumentType.word())
+                        .then(argument("name", StringArgumentType.string())
                                 .executes(WaypointCommand::executeReceive)))
                 .then(literal("rename")
-                        .then(argument("name", StringArgumentType.word())
+                        .then(argument("name", StringArgumentType.string())
                                 .then(argument("new name", StringArgumentType.word())
                                         .executes(WaypointCommand::executeRename))))
                 .then(literal("remove")
-                        .then(argument("name", StringArgumentType.word())
+                        .then(argument("name", StringArgumentType.string())
                                 .executes(WaypointCommand::executeRemove))));
     }
 
@@ -53,12 +53,11 @@ public class WaypointCommand {
         if (w == null) {
             c.getSource().sendError(Text.literal("无共享坐标"));
             return 0;
-        } else if (addReversed(w)) {
-            return 0;
         }
 
-        var addMsg = Text.literal("已共享坐标" + w.getName()
-                        + "(" + w.getDimension().toString() + ", " + w.getPosition().toShortString() + ")")
+        add(MinimalTp.lastName, w);
+        var addMsg = Text.literal("已共享坐标 " + MinimalTp.lastName
+                        + "(" + w.dimension().toString() + ", " + w.position().toShortString() + ")")
                 .setStyle(MinimalTp.MSG_STYLE);
         c.getSource().sendFeedback(addMsg, true);
         return 1;
@@ -74,9 +73,9 @@ public class WaypointCommand {
         var position = player.getBlockPos();
         var recorder = player.getDisplayName().copy();
 
-        if (addReversed(new Waypoint(name, position, dimension, recorder))) return 0;
+        add(name, new Waypoint(position, dimension, recorder));
 
-        var addMsg = Text.literal("已共享坐标" + name
+        var addMsg = Text.literal("已共享坐标 " + name
                         + "(" + dimension.toString() + ", " + position.toShortString() + ")")
                 .setStyle(MinimalTp.MSG_STYLE);
         source.sendFeedback(addMsg, true);
@@ -92,53 +91,46 @@ public class WaypointCommand {
 
         var recorder = source.getPlayerOrThrow().getDisplayName().copy();
 
-        if (addReversed(new Waypoint(name, position, dimension, recorder))) return 0;
+        add(name, new Waypoint(position, dimension, recorder));
 
-        var addMsg = Text.empty()
-                .append(recorder)
-                .append("已共享坐标" + name + "(" + dimension.toString() + ", " + position.toShortString() + ")")
+        var addMsg = Text.literal("已共享坐标 " + name
+                        + "(" + dimension.toString() + ", " + position.toShortString() + ")")
                 .setStyle(MinimalTp.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
     }
 
-    private static boolean addReversed(Waypoint w) {
-        return !MinimalTp.waypoints.add(w);
+    private static void add(String name, Waypoint w) {
+        MinimalTp.ws.put(name, w);
     }
 
     public static int executeInfo(CommandContext<ServerCommandSource> c) {
         var name = StringArgumentType.getString(c, "name");
 
-        for (Waypoint waypoint : MinimalTp.waypoints) {
-            if (waypoint.getName().equals(name)) {
-                var infoMsg = Text.literal("坐标" + name
-                                + ": " + waypoint.getDimension().toString()
-                                + ", " + waypoint.getPosition().toShortString() + ", "
-                                + "记录者:")
-                        .append(waypoint.getRecorder())
-                        .setStyle(MinimalTp.MSG_STYLE);
-                c.getSource().sendFeedback(infoMsg, false);
-                return 1;
-            }
+        Waypoint w;
+        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.get(name)) == null) {
+            c.getSource().sendError(Text.literal("未找到共享坐标 " + name));
+            return 0;
         }
-
-        c.getSource().sendError(Text.literal("未找到共享坐标" + name));
-        return 0;
+        var infoMsg = Text.literal("坐标 " + name
+                        + ": " + w.dimension().toString()
+                        + ", " + w.position().toShortString() + ", "
+                        + "记录者:")
+                .append(w.recorder())
+                .setStyle(MinimalTp.MSG_STYLE);
+        c.getSource().sendFeedback(infoMsg, false);
+        return 1;
     }
 
     public static int executeList(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
 
-        if (MinimalTp.waypoints.size() == 0) {
+        if (MinimalTp.ws.isEmpty()) {
             source.sendError(Text.literal("无共享坐标"));
         } else {
-            var listMsg = Text.literal("共有" + MinimalTp.waypoints.size() + "个共享坐标:")
+            var listMsg = Text.literal("共有" + MinimalTp.ws.size() + "个共享坐标: ")
                     .setStyle(MinimalTp.MSG_STYLE);
-
-            ArrayList<String> list = new ArrayList<>(MinimalTp.waypoints.size());
-            for (Waypoint waypoint : MinimalTp.waypoints) {
-                list.add(waypoint.getName());
-            }
+            Set<String> list = MinimalTp.ws.keySet();
 
             listMsg.append(String.join(", ", list));
             source.sendFeedback(listMsg, false);
@@ -149,30 +141,29 @@ public class WaypointCommand {
     public static int executeReceive(CommandContext<ServerCommandSource> c) {
         var name = StringArgumentType.getString(c, "name");
 
-        for (Waypoint waypoint : MinimalTp.waypoints) {
-            if (waypoint.getName().equals(name)) {
-                String dimension = waypoint.getDimension().toString().split(":")[1];
-                String[] contents = {"xaero-waypoint",
-                        waypoint.getName(),
-                        waypoint.getName().substring(0, 1),
-                        String.valueOf(waypoint.getPosition().getX()),
-                        String.valueOf(waypoint.getPosition().getY()),
-                        String.valueOf(waypoint.getPosition().getZ()),
-                        String.valueOf(MinimalTp.color),
-                        "false:0",
-                        "Internal-" + dimension + "-waypoints"
-                };
-
-                if (++MinimalTp.color > 15) MinimalTp.color = 0;
-
-                var rcvMsg = Text.literal(String.join(":", contents));
-                c.getSource().sendFeedback(rcvMsg, false);
-                return 1;
-            }
+        Waypoint w;
+        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.get(name)) == null) {
+            c.getSource().sendError(Text.literal("未找到共享坐标 " + name));
+            return 0;
         }
 
-        c.getSource().sendError(Text.literal("未找到共享坐标" + name));
-        return 0;
+        String dimension = w.dimension().toString().split(":")[1];
+        String[] contents = {"xaero-waypoint",
+                name,
+                name.substring(0, 1),
+                String.valueOf(w.position().getX()),
+                String.valueOf(w.position().getY()),
+                String.valueOf(w.position().getZ()),
+                String.valueOf(MinimalTp.color),
+                "false:0",
+                "Internal-" + dimension + "-waypoints"
+        };
+
+        if (++MinimalTp.color > 15) MinimalTp.color = 0;
+
+        var rcvMsg = Text.literal(String.join(":", contents));
+        c.getSource().sendFeedback(rcvMsg, false);
+        return 1;
     }
 
     public static int executeRemove(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
@@ -180,49 +171,50 @@ public class WaypointCommand {
 
         var source = c.getSource();
         if (source.hasPermissionLevel(2)) {
-            if (MinimalTp.waypoints.removeIf(waypoint -> waypoint.getName().equals(name))) {
-                var removeMsg = Text.literal("已移除共享坐标" + name)
-                        .setStyle(MinimalTp.MSG_STYLE);
-                source.sendFeedback(removeMsg, true);
-                return 1;
+            if (MinimalTp.ws.isEmpty() || MinimalTp.ws.remove(name) == null) {
+                source.sendError(Text.literal("未找到共享坐标 " + name));
+                return 0;
             }
 
-            source.sendError(Text.literal("未找到共享坐标" + name));
-            return 0;
-        }
-
-        var executor = source.getPlayerOrThrow().getDisplayName().copy();
-
-        if (MinimalTp.waypoints.removeIf(
-                waypoint -> waypoint.getName().equals(name) && waypoint.getRecorder().equals(executor)
-        )) {
-            var removeMsg = Text.literal("已移除共享坐标" + name)
+            var removeMsg = Text.literal("已移除共享坐标 " + name)
                     .setStyle(MinimalTp.MSG_STYLE);
             source.sendFeedback(removeMsg, true);
             return 1;
         }
 
-        source.sendError(Text.literal("未找到共享坐标" + name + "或您无权限移除此坐标"));
-        return 0;
+        var executor = source.getPlayerOrThrow().getDisplayName().copy();
+
+        Waypoint w;
+        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.get(name)) == null) {
+            source.sendError(Text.literal("未找到共享坐标 " + name));
+            return 0;
+        } else if (!w.recorder().equals(executor)) {
+            source.sendError(Text.literal("您无权限移除坐标 " + name));
+            return 0;
+        }
+
+        MinimalTp.ws.remove(name);
+        var removeMsg = Text.literal("已移除共享坐标 " + name)
+                .setStyle(MinimalTp.MSG_STYLE);
+        source.sendFeedback(removeMsg, true);
+        return 1;
     }
 
     public static int executeRename(CommandContext<ServerCommandSource> c) {
         var oldName = StringArgumentType.getString(c, "name");
         var newName = StringArgumentType.getString(c, "new name");
 
-        for (Waypoint waypoint : MinimalTp.waypoints) {
-            if (waypoint.getName().equals(oldName)) {
-                waypoint.setName(newName);
-
-                var renameMsg = Text.literal("已将坐标" + oldName + "重命名为" + newName)
-                        .setStyle(MinimalTp.MSG_STYLE);
-                c.getSource().sendFeedback(renameMsg, true);
-                return 1;
-            }
+        Waypoint w;
+        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.remove(oldName)) == null) {
+            c.getSource().sendError(Text.literal("未找到坐标 " + oldName));
+            return 0;
         }
+        MinimalTp.ws.put(newName, w);
 
-        c.getSource().sendError(Text.literal("未找到坐标" + oldName));
-        return 0;
+        var renameMsg = Text.literal("已将坐标 " + oldName + "重命名为 " + newName)
+                .setStyle(MinimalTp.MSG_STYLE);
+        c.getSource().sendFeedback(renameMsg, true);
+        return 1;
     }
 
 }
