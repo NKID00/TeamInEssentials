@@ -34,10 +34,10 @@ public class ChatMessageMixin {
     private void recordWaypoint(ChatMessageC2SPacket packet) {
         String message = packet.getChatMessage();
         if (message == null
-                /* The shortest legal Xaero waypoint sharing text is
-                *  "xaero-waypoint:a:a:0:0:0:0:true:0:Internal-overworld-waypoints",
-                *  whose length is 62. */
-                || message.length() < 62
+                /* The shortest legal Xaero waypoint sharing message is
+                *  "xaero-waypoint:a:a:0:0:0:0:true:0:Internal-the_end-waypoints",
+                *  whose length is 61. */
+                || message.length() < 61
                 || !message.startsWith("xaero-waypoint:")) {
             return;
         }
