@@ -6,20 +6,24 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import name.nkid00.minimaltp.MinimalTp;
-import name.nkid00.minimaltp.Waypoint;
+import name.nkid00.minimaltp.model.Waypoint;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class WaypointCommand {
+    public static AtomicInteger color;
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
                                 CommandRegistryAccess registryAccess,
                                 CommandManager.RegistrationEnvironment environment) {
@@ -49,14 +53,16 @@ public class WaypointCommand {
     }
 
     public static int executeAddShared(CommandContext<ServerCommandSource> c) {
-        Waypoint w = MinimalTp.lastWaypoint;
+        Pair<String, Waypoint> latest = MinimalTp.latestWaypoint;
+        String name = latest.getLeft();
+        Waypoint w = latest.getRight();
         if (w == null) {
             c.getSource().sendError(Text.literal("无共享坐标"));
             return 0;
         }
 
-        add(MinimalTp.lastName, w);
-        var addMsg = Text.literal("已共享坐标 " + MinimalTp.lastName
+        add(name, w);
+        var addMsg = Text.literal("已共享坐标 " + name
                         + "(" + w.dimension().toString() + ", " + w.position().toShortString() + ")")
                 .setStyle(MinimalTp.MSG_STYLE);
         c.getSource().sendFeedback(addMsg, true);
@@ -101,14 +107,14 @@ public class WaypointCommand {
     }
 
     private static void add(String name, Waypoint w) {
-        MinimalTp.ws.put(name, w);
+        MinimalTp.waypoints.put(name, w);
     }
 
     public static int executeInfo(CommandContext<ServerCommandSource> c) {
         var name = StringArgumentType.getString(c, "name");
 
         Waypoint w;
-        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.get(name)) == null) {
+        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.get(name)) == null) {
             c.getSource().sendError(Text.literal("未找到共享坐标 " + name));
             return 0;
         }
@@ -125,12 +131,12 @@ public class WaypointCommand {
     public static int executeList(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
 
-        if (MinimalTp.ws.isEmpty()) {
+        if (MinimalTp.waypoints.isEmpty()) {
             source.sendError(Text.literal("无共享坐标"));
         } else {
-            var listMsg = Text.literal("共有" + MinimalTp.ws.size() + "个共享坐标: ")
+            var listMsg = Text.literal("共有" + MinimalTp.waypoints.size() + "个共享坐标: ")
                     .setStyle(MinimalTp.MSG_STYLE);
-            Set<String> list = MinimalTp.ws.keySet();
+            Set<String> list = MinimalTp.waypoints.keySet();
 
             listMsg.append(String.join(", ", list));
             source.sendFeedback(listMsg, false);
@@ -142,7 +148,7 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         Waypoint w;
-        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.get(name)) == null) {
+        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.get(name)) == null) {
             c.getSource().sendError(Text.literal("未找到共享坐标 " + name));
             return 0;
         }
@@ -154,12 +160,12 @@ public class WaypointCommand {
                 String.valueOf(w.position().getX()),
                 String.valueOf(w.position().getY()),
                 String.valueOf(w.position().getZ()),
-                String.valueOf(MinimalTp.color),
+                String.valueOf(color),
                 "false:0",
                 "Internal-" + dimension + "-waypoints"
         };
 
-        if (++MinimalTp.color > 15) MinimalTp.color = 0;
+        if (color.incrementAndGet() > 15) color.set(0);
 
         var rcvMsg = Text.literal(String.join(":", contents));
         c.getSource().sendFeedback(rcvMsg, false);
@@ -171,7 +177,7 @@ public class WaypointCommand {
 
         var source = c.getSource();
         if (source.hasPermissionLevel(2)) {
-            if (MinimalTp.ws.isEmpty() || MinimalTp.ws.remove(name) == null) {
+            if (MinimalTp.waypoints.isEmpty() || MinimalTp.waypoints.remove(name) == null) {
                 source.sendError(Text.literal("未找到共享坐标 " + name));
                 return 0;
             }
@@ -185,7 +191,7 @@ public class WaypointCommand {
         var executor = source.getPlayerOrThrow().getDisplayName().copy();
 
         Waypoint w;
-        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.get(name)) == null) {
+        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.get(name)) == null) {
             source.sendError(Text.literal("未找到共享坐标 " + name));
             return 0;
         } else if (!w.recorder().equals(executor)) {
@@ -193,7 +199,7 @@ public class WaypointCommand {
             return 0;
         }
 
-        MinimalTp.ws.remove(name);
+        MinimalTp.waypoints.remove(name);
         var removeMsg = Text.literal("已移除共享坐标 " + name)
                 .setStyle(MinimalTp.MSG_STYLE);
         source.sendFeedback(removeMsg, true);
@@ -205,11 +211,11 @@ public class WaypointCommand {
         var newName = StringArgumentType.getString(c, "new name");
 
         Waypoint w;
-        if (MinimalTp.ws.isEmpty() || (w = MinimalTp.ws.remove(oldName)) == null) {
+        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.remove(oldName)) == null) {
             c.getSource().sendError(Text.literal("未找到坐标 " + oldName));
             return 0;
         }
-        MinimalTp.ws.put(newName, w);
+        MinimalTp.waypoints.put(newName, w);
 
         var renameMsg = Text.literal("已将坐标 " + oldName + "重命名为 " + newName)
                 .setStyle(MinimalTp.MSG_STYLE);

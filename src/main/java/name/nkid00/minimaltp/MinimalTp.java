@@ -1,5 +1,7 @@
 package name.nkid00.minimaltp;
 
+import name.nkid00.minimaltp.model.TpRequest;
+import name.nkid00.minimaltp.model.Waypoint;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -12,10 +14,12 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import net.minecraft.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +54,9 @@ public class MinimalTp implements ModInitializer {
 
     public static Options options;
     public static Data data;
-    public static HashMap<UUID, TpRequest> TpRequests = new HashMap<>();
-    public static HashMap<String, Waypoint> ws = new HashMap<>();
-
-    public static int color;
-    public static Waypoint lastWaypoint;
-    public static String lastName;
+    public static ConcurrentHashMap<UUID, TpRequest> TpRequests = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, Waypoint> waypoints = new ConcurrentHashMap<>();
+    public static volatile Pair<String, Waypoint> latestWaypoint;
 
     @Override
     public void onInitialize() {

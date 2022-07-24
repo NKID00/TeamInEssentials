@@ -1,4 +1,4 @@
-package name.nkid00.minimaltp;
+package name.nkid00.minimaltp.model;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;

@@ -1,7 +1,7 @@
 package name.nkid00.minimaltp.mixin;
 
 import name.nkid00.minimaltp.MinimalTp;
-import name.nkid00.minimaltp.Waypoint;
+import name.nkid00.minimaltp.model.Waypoint;
 
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,8 +61,8 @@ public class ChatMessageMixin {
             try {
                 position = new BlockPos(parseInt(params[3]), parseInt(params[4]), parseInt(params[5]));
                 dimension = new Identifier("minecraft", params[9].split("-")[1]);
-                MinimalTp.lastWaypoint = new Waypoint(position, dimension, player.getDisplayName().copy());
-                MinimalTp.lastName = params[1];
+                MinimalTp.latestWaypoint = new Pair<>(params[1],
+                        new Waypoint(position, dimension, player.getDisplayName().copy()));
             } catch (NumberFormatException | InvalidIdentifierException ignored) {
             }
         }

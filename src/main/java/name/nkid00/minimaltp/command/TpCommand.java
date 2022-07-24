@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import name.nkid00.minimaltp.MinimalTp;
-import name.nkid00.minimaltp.TpRequest;
+import name.nkid00.minimaltp.model.TpRequest;
 import name.nkid00.minimaltp.helper.TpHelper;
 
 import net.minecraft.command.CommandRegistryAccess;
