@@ -17,7 +17,6 @@ import net.minecraft.util.Formatting;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.util.Pair;
 import org.slf4j.Logger;
