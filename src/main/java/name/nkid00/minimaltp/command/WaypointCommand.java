@@ -176,51 +176,49 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         var source = c.getSource();
-        if (source.hasPermissionLevel(2)) {
-            if (MinimalTp.waypoints.isEmpty() || MinimalTp.waypoints.remove(name) == null) {
-                source.sendError(Text.literal("未找到共享坐标 " + name));
-                return 0;
-            }
+        var executor = source.getPlayerOrThrow().getDisplayName().copy();
+        var authorized = source.hasPermissionLevel(2);
 
+        Waypoint w;
+        int res = 0;
+        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.get(name)) == null) {
+            source.sendError(Text.literal("未找到共享坐标 " + name));
+        } else if (!authorized && !w.recorder().equals(executor)) {
+            source.sendError(Text.literal("您无权限移除坐标" + name));
+        } else if (MinimalTp.waypoints.remove(name, w)) {
             var removeMsg = Text.literal("已移除共享坐标 " + name)
                     .setStyle(MinimalTp.MSG_STYLE);
             source.sendFeedback(removeMsg, true);
-            return 1;
+            res = 1;
+        } else {
+            source.sendError(Text.literal("坐标 " + name + " 已更改"));
         }
-
-        var executor = source.getPlayerOrThrow().getDisplayName().copy();
-
-        Waypoint w;
-        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.get(name)) == null) {
-            source.sendError(Text.literal("未找到共享坐标 " + name));
-            return 0;
-        } else if (!w.recorder().equals(executor)) {
-            source.sendError(Text.literal("您无权限移除坐标 " + name));
-            return 0;
-        }
-
-        MinimalTp.waypoints.remove(name);
-        var removeMsg = Text.literal("已移除共享坐标 " + name)
-                .setStyle(MinimalTp.MSG_STYLE);
-        source.sendFeedback(removeMsg, true);
-        return 1;
+        return res;
     }
 
     public static int executeRename(CommandContext<ServerCommandSource> c) {
         var oldName = StringArgumentType.getString(c, "name");
         var newName = StringArgumentType.getString(c, "new name");
 
-        Waypoint w;
-        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.remove(oldName)) == null) {
-            c.getSource().sendError(Text.literal("未找到坐标 " + oldName));
-            return 0;
-        }
-        MinimalTp.waypoints.put(newName, w);
+        var source = c.getSource();
+        var authorized = source.hasPermissionLevel(2);
 
-        var renameMsg = Text.literal("已将坐标 " + oldName + "重命名为 " + newName)
-                .setStyle(MinimalTp.MSG_STYLE);
-        c.getSource().sendFeedback(renameMsg, true);
-        return 1;
+        Waypoint w;
+        int res = 0;
+        if (MinimalTp.waypoints.isEmpty() || (w = MinimalTp.waypoints.get(oldName)) == null) {
+            source.sendError(Text.literal("未找到坐标 " + oldName));
+        } else if (!authorized) {
+            source.sendError(Text.literal("您无权限重命名坐标" + oldName));
+        } else if (MinimalTp.waypoints.remove(oldName, w)) {
+            MinimalTp.waypoints.put(newName, w);
+            var renameMsg = Text.literal("已将坐标 " + oldName + "重命名为 " + newName)
+                    .setStyle(MinimalTp.MSG_STYLE);
+            source.sendFeedback(renameMsg, true);
+            res = 1;
+        } else {
+            source.sendError(Text.literal("坐标 " + oldName + " 已更改"));
+        }
+        return res;
     }
 
 }
