@@ -1,4 +1,4 @@
-package name.nkid00.minimaltp.mixin;
+package name.nkid00.teaminess.mixin;
 
 import java.util.Collection;
 

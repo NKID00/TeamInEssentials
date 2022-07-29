@@ -1,7 +1,7 @@
-package name.nkid00.minimaltp;
+package name.nkid00.teaminess;
 
-import name.nkid00.minimaltp.model.TpRequest;
-import name.nkid00.minimaltp.model.Waypoint;
+import name.nkid00.teaminess.model.TpRequest;
+import name.nkid00.teaminess.model.Waypoint;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -26,10 +26,10 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import name.nkid00.minimaltp.command.*;
+import name.nkid00.teaminess.command.*;
 
-public class MinimalTp implements ModInitializer {
-    public static final Logger LOGGER = LoggerFactory.getLogger("MinimalTp");
+public class Teaminess implements ModInitializer {
+    public static final Logger LOGGER = LoggerFactory.getLogger("Teaminess");
     public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -68,17 +68,17 @@ public class MinimalTp implements ModInitializer {
         var loader = FabricLoader.getInstance();
 
         // Options (static and shared globally)
-        Options.file = loader.getConfigDir().resolve("minimaltp.json").toFile();
+        Options.file = loader.getConfigDir().resolve("teaminess.json").toFile();
         Options.load();
 
         // Data (dynamic and stored respectively for each world)
-        Data.file = loader.getConfigDir().resolve("minimaltp/data.json").toFile();
+        Data.file = loader.getConfigDir().resolve("teaminess/data.json").toFile();
         Data.load();
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> Data.save());
 
         // Commands
         if (POTENTIAL_COMMAND_CONFLICT) {
-            MinimalTp.LOGGER.warn("Commands are disabled due to potential conflict with WorldEdit");
+            Teaminess.LOGGER.warn("Commands are disabled due to potential conflict with WorldEdit");
         } else {
             CommandRegistrationCallback.EVENT.register(HelpCommand::register);
             CommandRegistrationCallback.EVENT.register(ReloadOptionsCommand::register);

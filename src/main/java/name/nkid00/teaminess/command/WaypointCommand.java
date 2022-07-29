@@ -1,13 +1,13 @@
-package name.nkid00.minimaltp.command;
+package name.nkid00.teaminess.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import name.nkid00.minimaltp.MinimalTp;
-import name.nkid00.minimaltp.model.Waypoint;
-import name.nkid00.minimaltp.model.Location;
+import name.nkid00.teaminess.Teaminess;
+import name.nkid00.teaminess.model.Waypoint;
+import name.nkid00.teaminess.model.Location;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -75,7 +75,7 @@ public class WaypointCommand {
 
         var addMsg = Text.literal("已添加坐标记录点 ").append(w.chatFormatString(name))
                 .append(" (" + position.toShortString() + ", " + dimension.toString() + ")")
-                .setStyle(MinimalTp.MSG_STYLE);
+                .setStyle(Teaminess.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
     }
@@ -100,17 +100,17 @@ public class WaypointCommand {
 
         var addMsg = Text.literal("已添加坐标记录点 ").append(w.chatFormatString(name))
                 .append(" (" + position.toShortString() + ", " + dimension.toString() + ")")
-                .setStyle(MinimalTp.MSG_STYLE);
+                .setStyle(Teaminess.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
     }
 
     private static void addToMap(Pair<String, Waypoint> waypointPair) {
-        MinimalTp.WaypointMap.put(waypointPair.getLeft(), waypointPair.getRight());
+        Teaminess.WaypointMap.put(waypointPair.getLeft(), waypointPair.getRight());
     }
 
     private static void addToMap(String name, Waypoint w) {
-        MinimalTp.WaypointMap.put(name, w);
+        Teaminess.WaypointMap.put(name, w);
     }
 
     // waypoint info
@@ -118,7 +118,7 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         Waypoint w;
-        if (MinimalTp.WaypointMap.isEmpty() || (w = MinimalTp.WaypointMap.get(name)) == null) {
+        if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             c.getSource().sendError(Text.literal("无储存的坐标记录点 ")
                     .append(new Waypoint().chatFormatString(name)));
             return 0;
@@ -128,7 +128,7 @@ public class WaypointCommand {
                         + ", " + w.location.dimension().toString() + ", "
                         + "记录者:")
                 .append(w.recorder)
-                .setStyle(MinimalTp.MSG_STYLE);
+                .setStyle(Teaminess.MSG_STYLE);
         c.getSource().sendFeedback(infoMsg, false);
         return 1;
     }
@@ -137,13 +137,13 @@ public class WaypointCommand {
     public static int executeList(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
 
-        if (MinimalTp.WaypointMap.isEmpty()) {
+        if (Teaminess.WaypointMap.isEmpty()) {
             source.sendError(Text.literal("无储存的坐标记录点"));
         } else {
-            var listMsg = Text.literal("共有" + MinimalTp.WaypointMap.size() + "个坐标记录点: ")
-                    .setStyle(MinimalTp.MSG_STYLE);
+            var listMsg = Text.literal("共有" + Teaminess.WaypointMap.size() + "个坐标记录点: ")
+                    .setStyle(Teaminess.MSG_STYLE);
             var listText = Text.empty();
-            Set<String> list = MinimalTp.WaypointMap.keySet();
+            Set<String> list = Teaminess.WaypointMap.keySet();
             boolean f = false;
             for (String name : list) {
                 if (f)
@@ -151,7 +151,7 @@ public class WaypointCommand {
                 else
                     f = true;
 
-                listText.append(MinimalTp.WaypointMap.get(name).chatFormatString(name));
+                listText.append(Teaminess.WaypointMap.get(name).chatFormatString(name));
             }
 
             listMsg.append(listText);
@@ -170,16 +170,16 @@ public class WaypointCommand {
 
         Waypoint w;
         int res = 0;
-        if (MinimalTp.WaypointMap.isEmpty() || (w = MinimalTp.WaypointMap.get(name)) == null) {
+        if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             source.sendError(Text.literal("无储存的坐标记录点 ")
                     .append(new Waypoint().chatFormatString(name)));
         } else if (!authorized && !(w.recorder == executor)) {
             source.sendError(Text.literal("您无权限移除坐标记录点")
                     .append(w.chatFormatString(name)));
-        } else if (MinimalTp.WaypointMap.remove(name, w)) {
+        } else if (Teaminess.WaypointMap.remove(name, w)) {
             var removeMsg = Text.literal("已移除坐标记录点 ")
                     .append(w.chatFormatString(name))
-                    .setStyle(MinimalTp.MSG_STYLE);
+                    .setStyle(Teaminess.MSG_STYLE);
             source.sendFeedback(removeMsg, true);
             res = 1;
         } else {
@@ -204,17 +204,17 @@ public class WaypointCommand {
 
         Waypoint w;
         int res = 0;
-        if (MinimalTp.WaypointMap.isEmpty() || (w = MinimalTp.WaypointMap.get(oldName)) == null) {
+        if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(oldName)) == null) {
             source.sendError(Text.literal("未找到坐标记录点 ")
                     .append(new Waypoint().chatFormatString(oldName)));
         } else if (!authorized) {
             source.sendError(Text.literal("您无权限重命名坐标记录点 ")
                     .append(w.chatFormatString(oldName)));
-        } else if (MinimalTp.WaypointMap.remove(oldName, w)) {
-            MinimalTp.WaypointMap.put(newName, w);
+        } else if (Teaminess.WaypointMap.remove(oldName, w)) {
+            Teaminess.WaypointMap.put(newName, w);
             var renameMsg = Text.literal("已将坐标记录点 ").append(w.chatFormatString(oldName))
                     .append("重命名为 ").append(w.chatFormatString(newName))
-                    .setStyle(MinimalTp.MSG_STYLE);
+                    .setStyle(Teaminess.MSG_STYLE);
             source.sendFeedback(renameMsg, true);
             res = 1;
         } else {
@@ -228,7 +228,7 @@ public class WaypointCommand {
     public static int executeFromChat(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
 
-        var latest = MinimalTp.latestWaypointPair;
+        var latest = Teaminess.latestWaypointPair;
         String name = latest.getLeft();
         Waypoint w = latest.getRight();
         if (!w.hasLocation()) {
@@ -243,7 +243,7 @@ public class WaypointCommand {
         var addMsg = Text.literal("已添加坐标记录点 ").append(w.chatFormatString(name))
                 .append(" (" + w.location.position().toShortString()
                         + ", " + w.location.dimension().toString() + ")")
-                .setStyle(MinimalTp.MSG_STYLE);
+                .setStyle(Teaminess.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
     }
@@ -253,7 +253,7 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         Waypoint w;
-        if (MinimalTp.WaypointMap.isEmpty() || (w = MinimalTp.WaypointMap.get(name)) == null) {
+        if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             c.getSource().sendError(Text.literal("无储存的坐标记录点 ")
                     .append(new Waypoint().chatFormatString(name)));
             return 0;

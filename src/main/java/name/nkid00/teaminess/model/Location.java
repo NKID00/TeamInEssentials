@@ -1,4 +1,4 @@
-package name.nkid00.minimaltp.model;
+package name.nkid00.teaminess.model;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;

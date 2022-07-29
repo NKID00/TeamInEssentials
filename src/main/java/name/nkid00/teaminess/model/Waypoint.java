@@ -1,12 +1,12 @@
-package name.nkid00.minimaltp.model;
+package name.nkid00.teaminess.model;
 
-import name.nkid00.minimaltp.MinimalTp;
+import name.nkid00.teaminess.Teaminess;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 public class Waypoint {
-    public int colorId; // index-color map was in MinimalTp.XAERO_COLORMAP, -1 means plain
+    public int colorId; // index-color map was in Teaminess.XAERO_COLORMAP, -1 means plain
     public Location location;
     public Text recorder;
     public final Long timestamp;
@@ -17,7 +17,7 @@ public class Waypoint {
     }
 
     public Waypoint() {
-        this(null, Text.literal("MinimalTp Mod"));
+        this(null, Text.literal("Teaminess Mod"));
     }
 
     public Waypoint(Location location, Text recorder) {
@@ -66,7 +66,7 @@ public class Waypoint {
     }
 
     // Format the name with color whose index was stored in the Waypoint.colorId
-    // the colorid reflect map is MinimalTp.XAERO_COLORMAP
+    // the colorid reflect map is Teaminess.XAERO_COLORMAP
     public Text chatFormatString(String name) {
         if (this.isEmpty())
             return Text.literal(name);
@@ -74,7 +74,7 @@ public class Waypoint {
         Style style = Style.EMPTY;
 
         if (this.hasColor())
-            style = style.withColor(MinimalTp.XAERO_COLORMAP[this.colorId]);
+            style = style.withColor(Teaminess.XAERO_COLORMAP[this.colorId]);
 
         if (this.hasLocation()) {
             String[] hoverStrComposition = {

@@ -1,4 +1,4 @@
-package name.nkid00.minimaltp.command;
+package name.nkid00.teaminess.command;
 
 public class TaskCommand {
     
