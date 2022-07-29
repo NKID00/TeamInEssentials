@@ -13,12 +13,12 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
 
 import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +39,12 @@ public class MinimalTp implements ModInitializer {
     public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
     public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
     public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
+    public static final Formatting[] XAERO_COLORMAP = {
+            Formatting.BLACK, Formatting.DARK_BLUE, Formatting.DARK_GREEN, Formatting.DARK_AQUA,
+            Formatting.DARK_RED, Formatting.DARK_PURPLE, Formatting.GOLD, Formatting.GRAY,
+            Formatting.DARK_GRAY, Formatting.BLUE, Formatting.GREEN, Formatting.AQUA,
+            Formatting.RED, Formatting.LIGHT_PURPLE, Formatting.YELLOW, Formatting.WHITE
+    };
     public static final Style CLICK_TPA_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_GREEN)
             .withUnderline(true)
@@ -54,23 +60,23 @@ public class MinimalTp implements ModInitializer {
     public static Options options;
     public static Data data;
     public static ConcurrentHashMap<UUID, TpRequest> TpRequests = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, Waypoint> waypoints = new ConcurrentHashMap<>();
-    public static volatile Pair<String, Waypoint> latestWaypoint;
+    public static ConcurrentHashMap<String, Waypoint> WaypointMap = new ConcurrentHashMap<>();
+    public static volatile Pair<String, Waypoint> latestWaypointPair = new Pair<>("", new Waypoint());
 
     @Override
     public void onInitialize() {
         var loader = FabricLoader.getInstance();
 
-        // options (static and shared globally)
+        // Options (static and shared globally)
         Options.file = loader.getConfigDir().resolve("minimaltp.json").toFile();
         Options.load();
 
-        // data (dynamic and stored respectively for each world)
+        // Data (dynamic and stored respectively for each world)
         Data.file = loader.getConfigDir().resolve("minimaltp/data.json").toFile();
         Data.load();
         ServerLifecycleEvents.SERVER_STOPPED.register((server) -> Data.save());
 
-        // commands
+        // Commands
         if (POTENTIAL_COMMAND_CONFLICT) {
             MinimalTp.LOGGER.warn("Commands are disabled due to potential conflict with WorldEdit");
         } else {
@@ -82,7 +88,7 @@ public class MinimalTp implements ModInitializer {
             CommandRegistrationCallback.EVENT.register(WaypointCommand::register);
         }
 
-        // banners
+        // Banners
         if (POTENTIAL_COMMAND_CONFLICT) {
             ServerPlayConnectionEvents.JOIN.register(Banner::registerPotentialCommandConflict);
         } else {

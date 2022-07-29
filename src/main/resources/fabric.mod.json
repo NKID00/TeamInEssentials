@@ -5,7 +5,9 @@
   "name": "Minimal Teleportation",
   "description": "Teleport to your teammates!",
   "authors": [
-    "NKID00"
+    "NKID00",
+    "SkyR0ver",
+    "Cnily03"
   ],
   "contact": {
     "sources": "https://github.com/NKID00/minimal-teleportation"
