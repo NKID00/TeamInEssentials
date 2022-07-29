@@ -1,11 +1,12 @@
 package name.nkid00.minimaltp.model;
 
-import java.util.Random;
-
+import name.nkid00.minimaltp.MinimalTp;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 public class Waypoint {
-    public int colorId; // index-color map was in MinimalTp.XAERO_COLORMAP
+    public int colorId; // index-color map was in MinimalTp.XAERO_COLORMAP, -1 means plain
     public Location location;
     public Text recorder;
     public final Long timestamp;
@@ -20,7 +21,7 @@ public class Waypoint {
     }
 
     public Waypoint(Location location, Text recorder) {
-        this(location, recorder, new Random().nextInt(15));
+        this(location, recorder, -1);
     }
 
     public Waypoint(Location location, Text recorder, int colorId) {
@@ -32,19 +33,23 @@ public class Waypoint {
     }
 
     public boolean isEmpty() {
-        return this.location == null || this.location.position() == null;
+        return this.equals(new Waypoint());
     }
 
-    public boolean equals(Waypoint w) {
+    public boolean hasLocation() {
+        return !(this.location == null || this.location.position() == null);
+    }
+
+    public boolean hasColor() {
+        return this.colorId >= 0;
+    }
+
+    public boolean equalsLocation(Waypoint w) {
         if (this.location == null && w.location == null)
             return true;
         if (this.location == null)
             return false;
         return this.location.equals(w.location);
-    }
-
-    public boolean equalsStrict(Waypoint w) {
-        return this.equals(w) && this.recorder == w.recorder;
     }
 
     /*
@@ -58,5 +63,30 @@ public class Waypoint {
 
     public static boolean isNameLegal(String name) {
         return name.trim().length() > 0;
+    }
+
+    // Format the name with color whose index was stored in the Waypoint.colorId
+    // the colorid reflect map is MinimalTp.XAERO_COLORMAP
+    public Text chatFormatString(String name) {
+        if (this.isEmpty())
+            return Text.literal(name);
+
+        Style style = Style.EMPTY;
+
+        if (this.hasColor())
+            style = style.withColor(MinimalTp.XAERO_COLORMAP[this.colorId]);
+
+        if (this.hasLocation()) {
+            String[] hoverStrComposition = {
+                    String.valueOf(this.location.position().getX()),
+                    String.valueOf(this.location.position().getX()),
+                    String.valueOf(this.location.position().getX()),
+                    this.location.dimension().toString()
+            };
+            Text hoverText = Text.literal(String.join(", ", hoverStrComposition));
+            style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+        }
+
+        return Text.literal(name).setStyle(style);
     }
 }
