@@ -79,8 +79,8 @@ public class Waypoint {
         if (this.hasLocation()) {
             String[] hoverStrComposition = {
                     String.valueOf(this.location.position().getX()),
-                    String.valueOf(this.location.position().getX()),
-                    String.valueOf(this.location.position().getX()),
+                    String.valueOf(this.location.position().getY()),
+                    String.valueOf(this.location.position().getZ()),
                     this.location.dimension().toString()
             };
             Text hoverText = Text.literal(String.join(", ", hoverStrComposition));
