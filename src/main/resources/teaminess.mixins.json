@@ -1,11 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "name.nkid00.minimaltp.mixin",
+  "package": "name.nkid00.teaminess.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "TeleportCommandMixin",
-    "SharedConstantsMixin"
+    "SharedConstantsMixin",
+    "ChatMessageMixin"
   ],
   "client": [
     "SharedConstantsMixin"

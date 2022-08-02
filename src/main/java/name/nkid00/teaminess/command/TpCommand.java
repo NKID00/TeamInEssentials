@@ -1,12 +1,12 @@
-package name.nkid00.minimaltp.command;
+package name.nkid00.teaminess.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import name.nkid00.minimaltp.MinimalTp;
-import name.nkid00.minimaltp.TpRequest;
-import name.nkid00.minimaltp.helper.TpHelper;
+import name.nkid00.teaminess.Teaminess;
+import name.nkid00.teaminess.model.TpRequest;
+import name.nkid00.teaminess.helper.TpHelper;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -19,7 +19,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 import net.minecraft.text.Text;
 
 public class TpCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess,
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
+            CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(
                 literal("/tp").then(
@@ -31,7 +32,7 @@ public class TpCommand {
         var target = source.getPlayerOrThrow();
         var destination = EntityArgumentType.getPlayer(c, "destination");
         if (target.equals(destination)) {
-            source.sendError(Text.literal("请不要随意玩耍硬核自研大数据人工智能黑科技模组!").setStyle(MinimalTp.REFUSE_STYLE));
+            source.sendError(Text.literal("请不要随意玩耍硬核自研大数据人工智能黑科技模组!").setStyle(Teaminess.REFUSE_STYLE));
             return 0;
         }
 
@@ -41,26 +42,26 @@ public class TpCommand {
 
         var teleportImmediately = false;
         if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
-            teleportImmediately = MinimalTp.options.immediateTeleportationInTeam;
+            teleportImmediately = Teaminess.options.immediateTeleportationInTeam;
         } else {
-            teleportImmediately = MinimalTp.options.immediateTeleportationBetweenTeam;
+            teleportImmediately = Teaminess.options.immediateTeleportationBetweenTeam;
         }
 
         if (teleportImmediately) {
             return TpHelper.teleportImmediately(target, destination);
         } else {
-            MinimalTp.TpRequests.put(destination.getUuid(), new TpRequest(source.getPlayerOrThrow(), destination));
+            Teaminess.TpRequests.put(destination.getUuid(), new TpRequest(source.getPlayerOrThrow(), destination));
 
-            var feedback = Text.literal("")
+            var feedback = Text.empty()
                     .append(target.getDisplayName().copy())
-                    .append(Text.literal(String.format("请求传送至你的位置,可以在%d秒内选择 ",
-                            MinimalTp.options.requestExpirationInterval)))
-                    .append(Text.literal("接受(//tpa)").setStyle(MinimalTp.CLICK_TPA_CMD_STYLE))
-                    .append(Text.literal(" 或 "))
-                    .append(Text.literal("拒绝(//tpr)").setStyle(MinimalTp.CLICK_TPR_CMD_STYLE))
-                    .setStyle(MinimalTp.MSG_STYLE);
+                    .append(String.format("请求传送至你的位置,可以在%d秒内选择 ",
+                            Teaminess.options.requestExpirationInterval))
+                    .append(Text.literal("接受(//tpa)").setStyle(Teaminess.CLICK_TPA_CMD_STYLE))
+                    .append(" 或 ")
+                    .append(Text.literal("拒绝(//tpr)").setStyle(Teaminess.CLICK_TPR_CMD_STYLE))
+                    .setStyle(Teaminess.MSG_STYLE);
             destination.getCommandSource().sendFeedback(feedback, false);
-            source.sendFeedback(Text.literal("已发送传送请求").setStyle(MinimalTp.MSG_STYLE), false);
+            source.sendFeedback(Text.literal("已发送传送请求").setStyle(Teaminess.MSG_STYLE), false);
 
             return 1;
         }

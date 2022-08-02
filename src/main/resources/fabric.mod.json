@@ -1,25 +1,27 @@
 {
   "schemaVersion": 1,
-  "id": "minimaltp",
+  "id": "teaminess",
   "version": "${version}",
-  "name": "Minimal Teleportation",
-  "description": "Teleport to your teammates!",
+  "name": "TeamInEssentials",
+  "description": "Team Inessentials or Team in Essentials?",
   "authors": [
-    "NKID00"
+    "NKID00",
+    "SkyR0ver",
+    "Cnily03"
   ],
   "contact": {
     "sources": "https://github.com/NKID00/minimal-teleportation"
   },
   "license": "MPL-2.0",
-  "icon": "assets/minimaltp/icon.png",
+  "icon": "assets/teaminess/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "name.nkid00.minimaltp.MinimalTp"
+      "name.nkid00.teaminess.Teaminess"
     ]
   },
   "mixins": [
-    "minimaltp.mixins.json"
+    "teaminess.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14",

@@ -1,10 +1,10 @@
-package name.nkid00.minimaltp.command;
+package name.nkid00.teaminess.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import name.nkid00.minimaltp.MinimalTp;
+import name.nkid00.teaminess.Teaminess;
 
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
@@ -25,8 +25,8 @@ public class TpaCommand {
         var source = c.getSource();
         var destination = source.getPlayerOrThrow();
         var uuid = destination.getUuid();
-        if (MinimalTp.TpRequests.containsKey(uuid)) {
-            var request = MinimalTp.TpRequests.remove(uuid);
+        if (Teaminess.TpRequests.containsKey(uuid)) {
+            var request = Teaminess.TpRequests.remove(uuid);
             if (request.isValid()) {
                 request.execute();
                 return 1;
