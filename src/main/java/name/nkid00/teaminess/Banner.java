@@ -1,6 +1,5 @@
 package name.nkid00.teaminess;
 
-import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
@@ -12,8 +11,7 @@ public class Banner {
         handler.player.sendMessage(
                 Text.empty()
                         .setStyle(Teaminess.MSG_STYLE)
-                        .append("输入//help来使用硬核自研大数据人工智能黑科技模组"),
-                MessageType.SYSTEM);
+                        .append("输入//help来使用硬核自研大数据人工智能黑科技模组"));
     }
 
     public static void registerPotentialCommandConflict(ServerPlayNetworkHandler handler, PacketSender sender,
@@ -21,7 +19,6 @@ public class Banner {
         handler.player.sendMessage(
                 Text.empty()
                         .setStyle(Teaminess.MSG_STYLE)
-                        .append("正在使用硬核自研大数据人工智能黑科技模组"),
-                MessageType.SYSTEM);
+                        .append("正在使用硬核自研大数据人工智能黑科技模组"));
     }
 }

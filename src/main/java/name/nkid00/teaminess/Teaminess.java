@@ -6,6 +6,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.text.ClickEvent;
@@ -27,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import name.nkid00.teaminess.command.*;
+import name.nkid00.teaminess.message.ChatMessage;
 
 public class Teaminess implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("Teaminess");
@@ -94,5 +96,8 @@ public class Teaminess implements ModInitializer {
         } else {
             ServerPlayConnectionEvents.JOIN.register(Banner::register);
         }
+
+        // ChatMessage
+        ServerMessageEvents.CHAT_MESSAGE.register(ChatMessage::onChatMessage);
     }
 }

@@ -15,14 +15,13 @@ public class TpHelper {
             ServerPlayerEntity destination) throws CommandSyntaxException {
         var feedback = Text.literal("已将")
                 .append(target.getDisplayName().copy())
-                .append("传送至你")
-                .setStyle(Teaminess.MSG_STYLE);
+                .append("传送至")
+                .append(destination.getDisplayName().copy());
         destination.getCommandSource().sendFeedback(feedback, false);
         return TeleportCommandMixin.execute(target.getCommandSource(), Collections.singleton(target), destination);
     }
 
-    public static void teleportTimed(ServerPlayerEntity target,
-            ServerPlayerEntity destination) {
+    public static void teleportTimed(ServerPlayerEntity target, ServerPlayerEntity destination) {
         var targetMsg = Text.literal("向")
                 .append(destination.getDisplayName().copy())
                 .append(Text.literal(String.format("的传送请求被接受, 将在%d秒后传送",
