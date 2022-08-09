@@ -1,20 +1,16 @@
 package name.nkid00.teaminess.model;
 
-import name.nkid00.teaminess.Teaminess;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class Waypoint {
-    public int colorId; // index-color map was in Teaminess.XAERO_COLORMAP, -1 means plain
     public Location location;
     public Text recorder;
+    public int colorId; // index-color map was in Teaminess.XAERO_COLORMAP, -1 means plain
     public final Long timestamp;
-    public Long latestEditTimestamp;
-
-    private static Long getTimeStamp() {
-        return System.currentTimeMillis();
-    }
+    //public Long latestEditTimestamp;
 
     public Waypoint() {
         this(null, Text.literal("Teaminess Mod"));
@@ -28,32 +24,29 @@ public class Waypoint {
         this.location = location;
         this.recorder = recorder;
         this.colorId = colorId;
-        this.timestamp = Waypoint.getTimeStamp();
-        this.latestEditTimestamp = this.timestamp;
+        this.timestamp = System.currentTimeMillis();
+        //this.latestEditTimestamp = timestamp;
     }
 
     public boolean isEmpty() {
-        return this.equals(new Waypoint());
+        return location == null || location.isEmpty();
     }
 
     public boolean hasLocation() {
-        return !(this.location == null || this.location.position() == null);
+        return !(location == null || location.position() == null);
     }
 
     public boolean hasColor() {
-        return this.colorId >= 0;
+        return colorId >= 0;
     }
 
-    public boolean equalsLocation(Waypoint w) {
-        if (this.location == null && w.location == null)
-            return true;
-        if (this.location == null)
-            return false;
-        return this.location.equals(w.location);
-    }
+    /*public boolean equalsLocation(Waypoint w) {
+        if (location == null) return w.location == null;
+        return location.equals(w.location);
+    }*/
 
     /*
-     * // Remenber to update latestEditTimestamp when the Waypoint was once edited.
+     * // Update latestEditTimestamp when the Waypoint was edited.
      * public Waypoint changeLocation(Location newLocation) {
      * this.location = newLocation;
      * this.latestEditTimestamp = Waypoint.getTimeStamp();
@@ -66,22 +59,22 @@ public class Waypoint {
     }
 
     // Format the name with color whose index was stored in the Waypoint.colorId
-    // the colorid reflect map is Teaminess.XAERO_COLORMAP
+    // the colorId reflect map is Teaminess.XAERO_COLORMAP
     public Text chatFormatString(String name) {
-        if (this.isEmpty())
+        if (isEmpty())
             return Text.literal(name);
 
         Style style = Style.EMPTY;
 
-        if (this.hasColor())
-            style = style.withColor(Teaminess.XAERO_COLORMAP[this.colorId]);
+        if (hasColor())
+            style = style.withColor(Formatting.byColorIndex(colorId));
 
-        if (this.hasLocation()) {
+        if (hasLocation()) {
             String[] hoverStrComposition = {
-                    String.valueOf(this.location.position().getX()),
-                    String.valueOf(this.location.position().getY()),
-                    String.valueOf(this.location.position().getZ()),
-                    this.location.dimension().toString()
+                    String.valueOf(location.position().getX()),
+                    String.valueOf(location.position().getY()),
+                    String.valueOf(location.position().getZ()),
+                    location.dimension().toString()
             };
             Text hoverText = Text.literal(String.join(", ", hoverStrComposition));
             style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));

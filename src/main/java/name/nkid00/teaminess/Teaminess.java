@@ -41,12 +41,6 @@ public class Teaminess implements ModInitializer {
     public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
     public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
     public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
-    public static final Formatting[] XAERO_COLORMAP = {
-            Formatting.BLACK, Formatting.DARK_BLUE, Formatting.DARK_GREEN, Formatting.DARK_AQUA,
-            Formatting.DARK_RED, Formatting.DARK_PURPLE, Formatting.GOLD, Formatting.GRAY,
-            Formatting.DARK_GRAY, Formatting.BLUE, Formatting.GREEN, Formatting.AQUA,
-            Formatting.RED, Formatting.LIGHT_PURPLE, Formatting.YELLOW, Formatting.WHITE
-    };
     public static final Style CLICK_TPA_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_GREEN)
             .withUnderline(true)
