@@ -114,10 +114,10 @@ public class WaypointCommand {
         }
 
         var infoMsg = Text.literal("坐标 ").append(decorateName(name, w))
-                .append(": " + w.location.position().toShortString()
-                        + ", " + w.location.dimension().toString() + ", "
+                .append(": " + w.getLocation().position().toShortString()
+                        + ", " + w.getLocation().dimension().toString() + ", "
                         + "记录者:")
-                .append(w.recorder)
+                .append(w.getRecorder())
                 .setStyle(Teaminess.MSG_STYLE);
         c.getSource().sendFeedback(infoMsg, false);
         return 1;
@@ -156,7 +156,7 @@ public class WaypointCommand {
         int res = 0;
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             source.sendError(Text.literal("无储存的坐标记录点 " + name));
-        } else if (!authorized && !(w.recorder == executor)) {
+        } else if (!authorized && !(w.getRecorder() == executor)) {
             source.sendError(Text.literal("您无权限移除坐标记录点 ")
                     .append(decorateName(name, w)));
         } else if (Teaminess.WaypointMap.remove(name, w)) {
@@ -223,8 +223,8 @@ public class WaypointCommand {
 
         addToMap(latest);
         var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
-                .append(" (" + w.location.position().toShortString()
-                        + ", " + w.location.dimension().toString() + ")")
+                .append(" (" + w.getLocation().position().toShortString()
+                        + ", " + w.getLocation().dimension().toString() + ")")
                 .setStyle(Teaminess.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
@@ -240,14 +240,14 @@ public class WaypointCommand {
             return 0;
         }
 
-        String dimension = w.location.dimension().toString().split(":")[1];
+        String dimension = w.getLocation().dimension().toString().split(":")[1];
         String[] contents = { "xaero-waypoint",
                 name,
                 name.substring(0, 1),
-                String.valueOf(w.location.position().getX()),
-                String.valueOf(w.location.position().getY()),
-                String.valueOf(w.location.position().getZ()),
-                String.valueOf(w.colorId),
+                String.valueOf(w.getLocation().position().getX()),
+                String.valueOf(w.getLocation().position().getY()),
+                String.valueOf(w.getLocation().position().getZ()),
+                String.valueOf(w.getColorId()),
                 "false:0",
                 "Internal-" + dimension + "-waypoints"
         };
@@ -276,14 +276,14 @@ public class WaypointCommand {
     // Format the name with hover text about the given waypoint
     private static MutableText decorateName(String name, Waypoint w) {
         String[] hoverStrComposition = {
-                String.valueOf(w.location.position().getX()),
-                String.valueOf(w.location.position().getY()),
-                String.valueOf(w.location.position().getZ()),
-                w.location.dimension().toString()
+                String.valueOf(w.getLocation().position().getX()),
+                String.valueOf(w.getLocation().position().getY()),
+                String.valueOf(w.getLocation().position().getZ()),
+                w.getLocation().dimension().toString()
         };
         Text hoverText = Text.literal(String.join(", ", hoverStrComposition));
 
-        Style style = Style.EMPTY.withColor(Formatting.byColorIndex(w.colorId))
+        Style style = Style.EMPTY.withColor(Formatting.byColorIndex(w.getColorId()))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
 
         return Text.literal(name).setStyle(style);

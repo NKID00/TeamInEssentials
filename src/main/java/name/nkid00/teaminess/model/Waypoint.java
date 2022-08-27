@@ -3,11 +3,23 @@ package name.nkid00.teaminess.model;
 import net.minecraft.text.Text;
 
 public class Waypoint {
-    public Location location;
-    public Text recorder;
-    public int colorId; // index-color map was in Teaminess.XAERO_COLORMAP, -1 means plain
+    private Location location;
+    private Text recorder;
+    private int colorId; // index-color map was in Teaminess.XAERO_COLORMAP, -1 means plain
     //public final Long timestamp;
     //public Long latestEditTimestamp;
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public Text getRecorder() {
+        return recorder;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
 
     public static Waypoint EMPTY = new Waypoint(null, Text.literal("Teaminess Mod"));
 
