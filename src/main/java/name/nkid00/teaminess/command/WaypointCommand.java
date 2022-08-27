@@ -132,19 +132,13 @@ public class WaypointCommand {
         } else {
             var listMsg = Text.literal("共有" + Teaminess.WaypointMap.size() + "个坐标记录点: ")
                     .setStyle(Teaminess.MSG_STYLE);
-            var listText = Text.empty();
-            Set<String> list = Teaminess.WaypointMap.keySet();
-            boolean f = false;
-            for (String name : list) {
-                if (f)
-                    listText.append(", ");
-                else
-                    f = true;
 
-                listText.append(decorateName(name));
-            }
+            Text[] decorated = Teaminess.WaypointMap.keySet().stream()
+                    .map(WaypointCommand::decorateName)
+                    .toArray(Text[]::new);
+            listMsg.append(decorated[0]); // No comma before the first name
+            Arrays.stream(decorated).skip(1).forEach(listMsg.append(", ")::append);
 
-            listMsg.append(listText);
             source.sendFeedback(listMsg, false);
         }
         return 1;
