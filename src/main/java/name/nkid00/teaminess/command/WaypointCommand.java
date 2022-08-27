@@ -12,17 +12,21 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockPos;
 
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class WaypointCommand {
-    public static Random colorIdRnd = new Random();
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
             CommandRegistryAccess registryAccess,
@@ -56,61 +60,47 @@ public class WaypointCommand {
 
     // waypoint add <name> - Auto add here where the player stand to the waypoints.
     public static int executeAddCurrent(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
-        var source = c.getSource();
-        var name = StringArgumentType.getString(c, "name");
-
-        if (!Waypoint.isNameLegal(name)) {
-            source.sendError(Text.literal("坐标记录点名称非法或为空！"));
-            return 0;
-        }
-
-        var dimension = source.getWorld().getDimension().effects();
-
-        var player = source.getPlayerOrThrow();
-        var position = player.getBlockPos();
-        var recorder = player.getDisplayName().copy();
-
-        Waypoint w;
-        addToMap(name, w = new Waypoint(new Location(position, dimension), recorder));
-
-        var addMsg = Text.literal("已添加坐标记录点 ").append(w.chatFormatString(name))
-                .append(" (" + position.toShortString() + ", " + dimension.toString() + ")")
-                .setStyle(Teaminess.MSG_STYLE);
-        source.sendFeedback(addMsg, true);
-        return 1;
+        return addWaypoint(c, false);
     }
 
     // waypoint add <name> <position>
     public static int executeAddGiven(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
+        return addWaypoint(c, true);
+    }
+
+    private static int addWaypoint(CommandContext<ServerCommandSource> c, boolean given) throws CommandSyntaxException {
         var source = c.getSource();
         var name = StringArgumentType.getString(c, "name");
 
-        if (!Waypoint.isNameLegal(name)) {
+        if (isNameInvalid(name)) {
             source.sendError(Text.literal("坐标记录点名称非法或为空！"));
             return 0;
         }
 
-        var position = BlockPosArgumentType.getBlockPos(c, "position");
-        var dimension = source.getWorld().getDimension().effects();
+        BlockPos position;
+        Text recorder;
+        if (given) {
+            position = BlockPosArgumentType.getBlockPos(c, "position");
+            recorder = source.getPlayerOrThrow().getDisplayName().copy();
+        } else {
+            var player = source.getPlayerOrThrow();
+            position = player.getBlockPos();
+            recorder = player.getDisplayName().copy();
+        }
+        Identifier dimension= source.getWorld().getDimension().effects();
 
-        var recorder = source.getPlayerOrThrow().getDisplayName().copy();
+        Waypoint w = new Waypoint(new Location(position, dimension), recorder);
+        if (w.isInvalid()) {
+            source.sendError(Text.literal("添加坐标记录点时出现未知错误"));
+            return 0;
+        }
+        addToMap(name, w);
 
-        Waypoint w;
-        addToMap(name, w = new Waypoint(new Location(position, dimension), recorder));
-
-        var addMsg = Text.literal("已添加坐标记录点 ").append(w.chatFormatString(name))
+        var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
                 .append(" (" + position.toShortString() + ", " + dimension.toString() + ")")
                 .setStyle(Teaminess.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
-    }
-
-    private static void addToMap(Pair<String, Waypoint> waypointPair) {
-        Teaminess.WaypointMap.put(waypointPair.getLeft(), waypointPair.getRight());
-    }
-
-    private static void addToMap(String name, Waypoint w) {
-        Teaminess.WaypointMap.put(name, w);
     }
 
     // waypoint info
@@ -118,12 +108,12 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         Waypoint w;
-        if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
-            c.getSource().sendError(Text.literal("无储存的坐标记录点 ")
-                    .append(new Waypoint().chatFormatString(name)));
+        if (Teaminess.WaypointMap.isEmpty()|| (w = Teaminess.WaypointMap.get(name)) == null) {
+            c.getSource().sendError(Text.literal("无储存的坐标记录点 " + name));
             return 0;
         }
-        var infoMsg = Text.literal("坐标 ").append(w.chatFormatString(name))
+
+        var infoMsg = Text.literal("坐标 ").append(decorateName(name, w))
                 .append(": " + w.location.position().toShortString()
                         + ", " + w.location.dimension().toString() + ", "
                         + "记录者:")
@@ -151,7 +141,7 @@ public class WaypointCommand {
                 else
                     f = true;
 
-                listText.append(Teaminess.WaypointMap.get(name).chatFormatString(name));
+                listText.append(decorateName(name));
             }
 
             listMsg.append(listText);
@@ -171,19 +161,18 @@ public class WaypointCommand {
         Waypoint w;
         int res = 0;
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
-            source.sendError(Text.literal("无储存的坐标记录点 ")
-                    .append(new Waypoint().chatFormatString(name)));
+            source.sendError(Text.literal("无储存的坐标记录点 " + name));
         } else if (!authorized && !(w.recorder == executor)) {
-            source.sendError(Text.literal("您无权限移除坐标记录点")
-                    .append(w.chatFormatString(name)));
+            source.sendError(Text.literal("您无权限移除坐标记录点 ")
+                    .append(decorateName(name, w)));
         } else if (Teaminess.WaypointMap.remove(name, w)) {
             var removeMsg = Text.literal("已移除坐标记录点 ")
-                    .append(w.chatFormatString(name))
+                    .append(decorateName(name, w))
                     .setStyle(Teaminess.MSG_STYLE);
             source.sendFeedback(removeMsg, true);
             res = 1;
         } else {
-            source.sendError(Text.literal("坐标记录点 ").append(w.chatFormatString(name))
+            source.sendError(Text.literal("坐标记录点 ").append(decorateName(name, w))
                     .append(" 已更改"));
         }
         return res;
@@ -195,8 +184,8 @@ public class WaypointCommand {
         var oldName = StringArgumentType.getString(c, "name");
         var newName = StringArgumentType.getString(c, "new name");
 
-        if (!Waypoint.isNameLegal(newName)) {
-            source.sendError(Text.literal("坐标记录点名称非法或为空！"));
+        if (isNameInvalid(newName)) {
+            source.sendError(Text.literal("新坐标记录点名称非法或为空！"));
             return 0;
         }
 
@@ -205,20 +194,19 @@ public class WaypointCommand {
         Waypoint w;
         int res = 0;
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(oldName)) == null) {
-            source.sendError(Text.literal("未找到坐标记录点 ")
-                    .append(new Waypoint().chatFormatString(oldName)));
+            source.sendError(Text.literal("未找到坐标记录点 " + oldName));
         } else if (!authorized) {
             source.sendError(Text.literal("您无权限重命名坐标记录点 ")
-                    .append(w.chatFormatString(oldName)));
+                    .append(decorateName(oldName, w)));
         } else if (Teaminess.WaypointMap.remove(oldName, w)) {
             Teaminess.WaypointMap.put(newName, w);
-            var renameMsg = Text.literal("已将坐标记录点 ").append(w.chatFormatString(oldName))
-                    .append("重命名为 ").append(w.chatFormatString(newName))
+            var renameMsg = Text.literal("已将坐标记录点 ").append(decorateName(oldName, w))
+                    .append(" 重命名为 ").append(decorateName(newName, w))
                     .setStyle(Teaminess.MSG_STYLE);
             source.sendFeedback(renameMsg, true);
             res = 1;
         } else {
-            source.sendError(Text.literal("坐标记录点 ").append(w.chatFormatString(oldName))
+            source.sendError(Text.literal("坐标记录点 ").append(decorateName(oldName, w))
                     .append(" 已更改"));
         }
         return res;
@@ -231,16 +219,16 @@ public class WaypointCommand {
         var latest = Teaminess.latestWaypointPair;
         String name = latest.getLeft();
         Waypoint w = latest.getRight();
-        if (!w.hasLocation()) {
+        if (w.isInvalid()) {
             source.sendError(Text.literal("未找到最近的坐标分享点"));
             return 0;
-        } else if (!Waypoint.isNameLegal(name)) {
+        } else if (isNameInvalid(name)) {
             source.sendError(Text.literal("最近的坐标分享点名称非法或为空！"));
             return 0;
         }
 
         addToMap(latest);
-        var addMsg = Text.literal("已添加坐标记录点 ").append(w.chatFormatString(name))
+        var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
                 .append(" (" + w.location.position().toShortString()
                         + ", " + w.location.dimension().toString() + ")")
                 .setStyle(Teaminess.MSG_STYLE);
@@ -254,8 +242,7 @@ public class WaypointCommand {
 
         Waypoint w;
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
-            c.getSource().sendError(Text.literal("无储存的坐标记录点 ")
-                    .append(new Waypoint().chatFormatString(name)));
+            c.getSource().sendError(Text.literal("无储存的坐标记录点 " + name));
             return 0;
         }
 
@@ -276,4 +263,35 @@ public class WaypointCommand {
         return 1;
     }
 
+    private static void addToMap(Pair<String, Waypoint> pair) {
+        addToMap(pair.getLeft(), pair.getRight());
+    }
+
+    private static void addToMap(String name, Waypoint w) {
+        Teaminess.WaypointMap.put(name, w);
+    }
+
+    private static boolean isNameInvalid(String name) {
+        return name.trim().length() == 0;
+    }
+
+    private static MutableText decorateName(String name){
+        return decorateName(name, Teaminess.WaypointMap.get(name));
+    }
+
+    // Format the name with hover text about the given waypoint
+    private static MutableText decorateName(String name, Waypoint w) {
+        String[] hoverStrComposition = {
+                String.valueOf(w.location.position().getX()),
+                String.valueOf(w.location.position().getY()),
+                String.valueOf(w.location.position().getZ()),
+                w.location.dimension().toString()
+        };
+        Text hoverText = Text.literal(String.join(", ", hoverStrComposition));
+
+        Style style = Style.EMPTY.withColor(Formatting.byColorIndex(w.colorId))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText));
+
+        return Text.literal(name).setStyle(style);
+    }
 }
