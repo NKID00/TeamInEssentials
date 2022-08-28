@@ -36,7 +36,7 @@ public class Waypoint {
     }
 
     public boolean isInvalid() {
-        return this != EMPTY || location == null || recorder == null || !location.isValid();
+        return this == EMPTY || location == null || recorder == null || !location.isValid();
     }
 
     /*
