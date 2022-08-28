@@ -93,9 +93,10 @@ public class WaypointCommand {
         if (w.isInvalid()) {
             source.sendError(Text.literal("添加坐标记录点时出现未知错误"));
             return 0;
+        } else if (!addToMap(name, w)){
+            source.sendError(Text.literal("坐标记录点 ").append(decorateName(name)).append(" 已存在"));
+            return 0;
         }
-        addToMap(name, w);
-
         var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
                 .append(" (" + position.toShortString() + ", " + dimension.toString() + ")")
                 .setStyle(Teaminess.MSG_STYLE);
@@ -219,9 +220,10 @@ public class WaypointCommand {
         } else if (isNameInvalid(name)) {
             source.sendError(Text.literal("最近的坐标分享点名称非法或为空！"));
             return 0;
+        } else if (!addToMap(latest)) {
+            source.sendError(Text.literal("坐标记录点 ").append(decorateName(name)).append(" 已存在"));
+            return 0;
         }
-
-        addToMap(latest);
         var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
                 .append(" (" + w.getLocation().position().toShortString()
                         + ", " + w.getLocation().dimension().toString() + ")")
@@ -257,12 +259,12 @@ public class WaypointCommand {
         return 1;
     }
 
-    private static void addToMap(Pair<String, Waypoint> pair) {
-        addToMap(pair.getLeft(), pair.getRight());
+    private static boolean addToMap(Pair<String, Waypoint> pair) {
+        return addToMap(pair.getLeft(), pair.getRight());
     }
 
-    private static void addToMap(String name, Waypoint w) {
-        Teaminess.WaypointMap.put(name, w);
+    private static boolean addToMap(String name, Waypoint w) {
+        return Teaminess.WaypointMap.putIfAbsent(name, w) == null;
     }
 
     private static boolean isNameInvalid(String name) {
