@@ -51,7 +51,9 @@ public class Teaminess implements ModInitializer {
             .withUnderline(true)
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
+
     public static final boolean POTENTIAL_COMMAND_CONFLICT = FabricLoader.getInstance().isModLoaded("worldedit");
+    public static final boolean COMPATIBLE_MAP_MODS = FabricLoader.getInstance().isModLoaded("xaerominimap");
 
     public static Options options;
     public static Data data;

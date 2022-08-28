@@ -87,13 +87,13 @@ public class WaypointCommand {
             position = player.getBlockPos();
             recorder = player.getDisplayName().copy();
         }
-        Identifier dimension= source.getWorld().getDimension().effects();
+        Identifier dimension = source.getWorld().getDimension().effects();
 
         Waypoint w = new Waypoint(new Location(position, dimension), recorder);
         if (w.isInvalid()) {
             source.sendError(Text.literal("添加坐标记录点时出现未知错误"));
             return 0;
-        } else if (!addToMap(name, w)){
+        } else if (!addToMap(name, w)) {
             source.sendError(Text.literal("坐标记录点 ").append(decorateName(name)).append(" 已存在"));
             return 0;
         }
@@ -109,7 +109,7 @@ public class WaypointCommand {
         var name = StringArgumentType.getString(c, "name");
 
         Waypoint w;
-        if (Teaminess.WaypointMap.isEmpty()|| (w = Teaminess.WaypointMap.get(name)) == null) {
+        if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             c.getSource().sendError(Text.literal("无储存的坐标记录点 " + name));
             return 0;
         }
@@ -209,8 +209,12 @@ public class WaypointCommand {
 
     // waypoint pull - Store the latest shared xaero-waypoint
     public static int executeFromChat(CommandContext<ServerCommandSource> c) {
-        var source = c.getSource();
+        if (!Teaminess.COMPATIBLE_MAP_MODS){
+            c.getSource().sendError(Text.literal("无兼容的地图模组"));
+            return 0;
+        }
 
+        var source = c.getSource();
         var latest = Teaminess.latestWaypointPair;
         String name = latest.getLeft();
         Waypoint w = latest.getRight();
@@ -234,8 +238,13 @@ public class WaypointCommand {
 
     // waypoint mark <name> - mark the waypoint in the xaero-map
     public static int executeToChat(CommandContext<ServerCommandSource> c) {
-        var name = StringArgumentType.getString(c, "name");
+        if (!Teaminess.COMPATIBLE_MAP_MODS){
+            c.getSource().sendError(Text.literal("无兼容的地图模组"));
+            return 0;
 
+        }
+
+        var name = StringArgumentType.getString(c, "name");
         Waypoint w;
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             c.getSource().sendError(Text.literal("无储存的坐标记录点 " + name));
@@ -243,7 +252,7 @@ public class WaypointCommand {
         }
 
         String dimension = w.getLocation().dimension().toString().split(":")[1];
-        String[] contents = { "xaero-waypoint",
+        String[] contents = {"xaero-waypoint",
                 name,
                 name.substring(0, 1),
                 String.valueOf(w.getLocation().position().getX()),
@@ -271,7 +280,7 @@ public class WaypointCommand {
         return name.trim().length() == 0;
     }
 
-    private static MutableText decorateName(String name){
+    private static MutableText decorateName(String name) {
         return decorateName(name, Teaminess.WaypointMap.get(name));
     }
 
