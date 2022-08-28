@@ -137,7 +137,7 @@ public class WaypointCommand {
                     .map(WaypointCommand::decorateName)
                     .toArray(Text[]::new);
             listMsg.append(decorated[0]); // No comma before the first name
-            Arrays.stream(decorated).skip(1).forEach(listMsg.append(", ")::append);
+            Arrays.stream(decorated).skip(1).forEach(text -> listMsg.append(", ").append(text));
 
             source.sendFeedback(listMsg, false);
         }
@@ -188,7 +188,7 @@ public class WaypointCommand {
         Waypoint w;
         int res = 0;
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(oldName)) == null) {
-            source.sendError(Text.literal("未找到坐标记录点 " + oldName));
+            source.sendError(Text.literal("无储存的坐标记录点 " + oldName));
         } else if (!authorized) {
             source.sendError(Text.literal("您无权限重命名坐标记录点 ")
                     .append(decorateName(oldName, w)));

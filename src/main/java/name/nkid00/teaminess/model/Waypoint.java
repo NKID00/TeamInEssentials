@@ -24,7 +24,7 @@ public class Waypoint {
     public static Waypoint EMPTY = new Waypoint(null, Text.literal("Teaminess Mod"));
 
     public Waypoint(Location location, Text recorder) {
-        this(location, recorder, 0);
+        this(location, recorder, 15);
     }
 
     public Waypoint(Location location, Text recorder, int colorId) {
