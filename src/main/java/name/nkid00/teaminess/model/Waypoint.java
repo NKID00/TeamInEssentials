@@ -5,9 +5,7 @@ import net.minecraft.text.Text;
 public class Waypoint {
     private Location location;
     private Text recorder;
-    private int colorId; // index-color map was in Teaminess.XAERO_COLORMAP, -1 means plain
-    //public final Long timestamp;
-    //public Long latestEditTimestamp;
+    private int colorId; // Refer to enum Formatting
 
     public Location getLocation() {
         return location;
@@ -31,27 +29,9 @@ public class Waypoint {
         this.location = location;
         this.recorder = recorder;
         this.colorId = colorId;
-        //this.timestamp = System.currentTimeMillis();
-        //this.latestEditTimestamp = timestamp;
     }
 
     public boolean isInvalid() {
         return this == EMPTY || location == null || recorder == null || !location.isValid();
     }
-
-    /*
-     * public boolean equalsLocation(Waypoint w) {
-     *  if (location == null) return w.location == null;
-     *  return location.equals(w.location);
-     * }
-     */
-
-    /*
-     * // Update latestEditTimestamp when the Waypoint was edited.
-     * public Waypoint changeLocation(Location newLocation) {
-     * this.location = newLocation;
-     * this.latestEditTimestamp = Waypoint.getTimeStamp();
-     * return this;
-     * }
-     */
 }

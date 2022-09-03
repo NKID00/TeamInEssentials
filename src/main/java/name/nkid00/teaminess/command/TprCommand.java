@@ -39,7 +39,7 @@ public class TprCommand {
                         .append(destination.getDisplayName().copy())
                         .append("的传送请求被拒绝")
                         .setStyle(Teaminess.REFUSE_STYLE);
-                // refer to ServerCommandSource method sendError(Text message)
+                // refer to class ServerCommandSource method sendError(Text message)
                 request.target.sendMessage(targetMsg.formatted(Formatting.RED));
                 return 1;
             }

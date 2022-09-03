@@ -57,8 +57,8 @@ public class Teaminess implements ModInitializer {
 
     public static Options options;
     public static Data data;
-    public static ConcurrentHashMap<UUID, TpRequest> TpRequests = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, Waypoint> WaypointMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, TpRequest> TpRequests = new ConcurrentHashMap<>(64);
+    public static ConcurrentHashMap<String, Waypoint> WaypointMap = new ConcurrentHashMap<>(16);
     public static volatile Pair<String, Waypoint> latestWaypointPair = new Pair<>("", Waypoint.EMPTY);
 
     @Override
