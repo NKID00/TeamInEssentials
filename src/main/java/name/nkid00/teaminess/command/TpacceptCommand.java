@@ -3,6 +3,7 @@ package name.nkid00.teaminess.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import name.nkid00.teaminess.Teaminess;
 
@@ -13,12 +14,13 @@ import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class TpaCommand {
+public class TpacceptCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
             CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(
-                literal("/tpa").executes(TpaCommand::execute));
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
+                literal("/tpaccept").executes(TpacceptCommand::execute));
+        dispatcher.register((literal("/tpa").redirect(literalCommandNode)));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {

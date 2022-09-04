@@ -22,8 +22,8 @@ The mod only needs to be installed on server-side for multiplayer.
   - [x] //reloadoptions
   - [ ] //task
   - [x] //tp
-  - [x] //tpa
-  - [x] //tpr
+  - [x] //tpa -> //tpa
+  - [x] //tpr -> //tpreject
   - [ ] //waypoint
 - tweaks
   - [x] allow formatting code

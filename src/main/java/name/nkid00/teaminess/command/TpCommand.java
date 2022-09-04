@@ -56,9 +56,9 @@ public class TpCommand {
                     .append(target.getDisplayName().copy())
                     .append(String.format("请求传送至你的位置,可以在%d秒内选择 ",
                             Teaminess.options.requestExpirationInterval))
-                    .append(Text.literal("接受(//tpa)").setStyle(Teaminess.CLICK_TPA_CMD_STYLE))
+                    .append(Text.literal("接受(//tpa)").setStyle(Teaminess.CLICK_TPACCPET_CMD_STYLE))
                     .append(" 或 ")
-                    .append(Text.literal("拒绝(//tpr)").setStyle(Teaminess.CLICK_TPR_CMD_STYLE))
+                    .append(Text.literal("拒绝(//tpr)").setStyle(Teaminess.CLICK_TPREJECT_CMD_STYLE))
                     .setStyle(Teaminess.MSG_STYLE);
             destination.getCommandSource().sendFeedback(feedback, false);
             source.sendFeedback(Text.literal("已发送传送请求").setStyle(Teaminess.MSG_STYLE), false);

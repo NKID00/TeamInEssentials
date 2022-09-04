@@ -41,16 +41,16 @@ public class Teaminess implements ModInitializer {
     public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
     public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
     public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
-    public static final Style CLICK_TPA_CMD_STYLE = Style.EMPTY
+    public static final Style CLICK_TPACCPET_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_GREEN)
             .withUnderline(true)
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
-            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpa"));
-    public static final Style CLICK_TPR_CMD_STYLE = Style.EMPTY
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpaccept"));
+    public static final Style CLICK_TPREJECT_CMD_STYLE = Style.EMPTY
             .withColor(Formatting.DARK_RED)
             .withUnderline(true)
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
-            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpr"));
+            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpreject"));
 
     public static final boolean POTENTIAL_COMMAND_CONFLICT = FabricLoader.getInstance().isModLoaded("worldedit");
     public static final boolean COMPATIBLE_MAP_MODS = FabricLoader.getInstance().isModLoaded("xaerominimap");
@@ -81,8 +81,8 @@ public class Teaminess implements ModInitializer {
             CommandRegistrationCallback.EVENT.register(HelpCommand::register);
             CommandRegistrationCallback.EVENT.register(ReloadOptionsCommand::register);
             CommandRegistrationCallback.EVENT.register(TpCommand::register);
-            CommandRegistrationCallback.EVENT.register(TpaCommand::register);
-            CommandRegistrationCallback.EVENT.register(TprCommand::register);
+            CommandRegistrationCallback.EVENT.register(TpacceptCommand::register);
+            CommandRegistrationCallback.EVENT.register(TprejectCommand::register);
             CommandRegistrationCallback.EVENT.register(WaypointCommand::register);
         }
 
