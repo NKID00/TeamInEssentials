@@ -52,7 +52,7 @@ public class WaypointCommand {
                                 .executes(WaypointCommand::executeRemove)))
                 // xaero-map support
                 .then(literal("chat")
-                        .then(literal("receive").executes(WaypointCommand::executeFromChat))
+                        .then(literal("get").executes(WaypointCommand::executeFromChat))
                         .then(literal("send")
                                 .then(argument("name", StringArgumentType.string())
                                         .executes(WaypointCommand::executeToChat)))));
@@ -207,7 +207,7 @@ public class WaypointCommand {
         return res;
     }
 
-    // waypoint pull - Store the latest shared xaero-waypoint
+    // waypoint chat get - Store the latest shared xaero-waypoint
     public static int executeFromChat(CommandContext<ServerCommandSource> c) {
         if (!Teaminess.COMPATIBLE_MAP_MODS){
             c.getSource().sendError(Text.literal("无兼容的地图模组"));
@@ -236,7 +236,7 @@ public class WaypointCommand {
         return 1;
     }
 
-    // waypoint mark <name> - mark the waypoint in the xaero-map
+    // waypoint chat send <name> - mark the waypoint in the xaero-map
     public static int executeToChat(CommandContext<ServerCommandSource> c) {
         if (!Teaminess.COMPATIBLE_MAP_MODS){
             c.getSource().sendError(Text.literal("无兼容的地图模组"));
