@@ -9,12 +9,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 public class Banner {
     public static void register(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
         handler.player.sendMessage(
-                Text.literal("输入//help来使用硬核自研大数据人工智能黑科技模组").setStyle(Styles.MSG_STYLE));
+                Text.literal("输入//help来使用硬核自研大数据人工智能黑科技模组").setStyle(Styles.NORMAL_MSG));
     }
 
     public static void registerPotentialCommandConflict(ServerPlayNetworkHandler handler, PacketSender sender,
             MinecraftServer server) {
         handler.player.sendMessage(
-                Text.literal("正在使用硬核自研大数据人工智能黑科技模组").setStyle(Styles.MSG_STYLE));
+                Text.literal("正在使用硬核自研大数据人工智能黑科技模组").setStyle(Styles.NORMAL_MSG));
     }
 }

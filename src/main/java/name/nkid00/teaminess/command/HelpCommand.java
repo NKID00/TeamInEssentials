@@ -22,7 +22,7 @@ public class HelpCommand {
 
     public static int execute(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
-        source.sendFeedback(Text.literal("帮助 -> //help").setStyle(Styles.MSG_STYLE), false);
+        source.sendFeedback(Text.literal("帮助 -> //help").setStyle(Styles.NORMAL_MSG), false);
         return 1;
     }
 }

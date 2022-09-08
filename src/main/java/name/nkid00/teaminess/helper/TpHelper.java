@@ -28,13 +28,13 @@ public class TpHelper {
                 .append(destination.getDisplayName().copy())
                 .append(Text.literal(String.format("的传送请求被接受, 将在%d秒后传送",
                         Teaminess.options.teleportInterval)))
-                .setStyle(Styles.ACCEPT_STYLE);
+                .setStyle(Styles.ACCEPTED);
         target.sendMessage(targetMsg);
         var destMsg = Text.literal("已接受")
                 .append(target.getDisplayName().copy())
                 .append(Text.literal(String.format("的传送请求, 将在%d秒后传送",
                         Teaminess.options.teleportInterval)))
-                .setStyle(Styles.MSG_STYLE);
+                .setStyle(Styles.NORMAL_MSG);
         destination.sendMessage(destMsg);
         Teaminess.TELEPORT_TIMER.schedule(new TpTask(target, destination), Teaminess.options.teleportInterval, TimeUnit.SECONDS);
     }

@@ -12,10 +12,29 @@ import com.google.gson.JsonSyntaxException;
 public class Options {
     public static File file;
 
-    public long teleportInterval = 3; // seconds
-    public long responseInterval = 120; // seconds
-    public boolean confirmInTeam = false;
-    public boolean confirmBetweenTeams = true;
+    /**
+     * Seconds ihe action of teleporting will be done in.
+     * <p>U. seconds</p>
+     */
+    public long teleportInterval = 3;
+    /**
+     * Live time (Cooling time) of the request of the teleportation.
+     * <p>U. seconds</p>
+     */
+    public long requestAliveTime = 120;
+    /**
+     * Trust own team so that the teleportation request would be automatically accepted and done immediately
+     * if it was sent by the player in the same team.
+     */
+    public boolean trustOwnTeam = true;
+    /**
+     * Trust other team so that the teleportation request would be automatically accepted and done immediately
+     * if it was sent by the player in the other team.
+     */
+    public boolean trustOtherTeams = false;
+    /**
+     * Make it legal to use the charactor formatted in <code>\u00A7</code> in the game.
+     */
     public boolean allowFormattingCode = true;
 
     public static void load() {

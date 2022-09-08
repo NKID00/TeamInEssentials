@@ -43,20 +43,20 @@ public class TpCommand {
 
         boolean confirmRequired = target_team != null && destination_team != null
                 && target_team.isEqual(destination_team) ?
-                Teaminess.options.confirmInTeam :
-                Teaminess.options.confirmBetweenTeams;
+                !Teaminess.options.trustOwnTeam :
+                !Teaminess.options.trustOtherTeams;
         if (!confirmRequired) return TpHelper.teleportImmediately(target, destination);
 
         Teaminess.TpRequests.put(destination.getUuid(), new TpRequest(source.getPlayerOrThrow(), destination));
         var feedback = Text.empty()
                 .append(target.getDisplayName().copy())
-                .append(String.format("请求传送至你的位置,可以在%d秒内选择 ", Teaminess.options.responseInterval))
-                .append(Text.literal("接受(//tpa)").setStyle(Styles.CLICK_TPACCPET_CMD_STYLE))
+                .append(String.format("请求传送至你的位置,可以在%d秒内选择 ", Teaminess.options.requestAliveTime))
+                .append(Text.literal("接受(//tpa)").setStyle(Styles.CLICK_TPACCPET_CMD))
                 .append(" 或 ")
-                .append(Text.literal("拒绝(//tpr)").setStyle(Styles.CLICK_TPREJECT_CMD_STYLE))
-                .setStyle(Styles.MSG_STYLE);
+                .append(Text.literal("拒绝(//tpr)").setStyle(Styles.CLICK_TPREJECT_CMD))
+                .setStyle(Styles.NORMAL_MSG);
         destination.sendMessage(feedback);
-        source.sendFeedback(Text.literal("已发送传送请求").setStyle(Styles.MSG_STYLE), false);
+        source.sendFeedback(Text.literal("已发送传送请求").setStyle(Styles.NORMAL_MSG), false);
         return 1;
     }
 }

@@ -36,12 +36,12 @@ public class TprejectCommand {
                 var destMsg = Text.literal("已拒绝")
                         .append(target.getDisplayName().copy())
                         .append("的传送请求")
-                        .setStyle(Styles.MSG_STYLE);
+                        .setStyle(Styles.NORMAL_MSG);
                 source.sendFeedback(destMsg, false);
                 var targetMsg = Text.literal("向")
                         .append(destination.getDisplayName().copy())
                         .append("的传送请求被拒绝")
-                        .setStyle(Styles.REFUSE_STYLE);
+                        .setStyle(Styles.REJECTED);
                 // refer to class ServerCommandSource method sendError(Text message)
                 request.target.sendMessage(targetMsg.formatted(Formatting.RED));
                 return 1;

@@ -25,7 +25,7 @@ public class ReloadOptionsCommand {
     public static int execute(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
         Options.load();
-        source.sendFeedback(Text.literal("已重载配置文件").setStyle(Styles.MSG_STYLE), false);
+        source.sendFeedback(Text.literal("已重载配置文件").setStyle(Styles.NORMAL_MSG), false);
         return 1;
     }
 }
