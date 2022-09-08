@@ -13,7 +13,7 @@ public class TpRequest {
     public TpRequest(ServerPlayerEntity target, ServerPlayerEntity destination) {
         this.target = target;
         this.destination = destination;
-        this.ExpirationTime = System.currentTimeMillis() + Teaminess.options.requestExpirationInterval * 1000;
+        this.ExpirationTime = System.currentTimeMillis() + Teaminess.options.responseInterval * 1000;
     }
 
     public void execute() {

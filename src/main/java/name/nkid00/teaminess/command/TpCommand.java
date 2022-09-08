@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import name.nkid00.teaminess.Styles;
 import name.nkid00.teaminess.Teaminess;
 import name.nkid00.teaminess.model.TpRequest;
 import name.nkid00.teaminess.helper.TpHelper;
@@ -32,7 +33,7 @@ public class TpCommand {
         var target = source.getPlayerOrThrow();
         var destination = EntityArgumentType.getPlayer(c, "destination");
         if (target.equals(destination)) {
-            source.sendError(Text.literal("请不要随意玩耍硬核自研大数据人工智能黑科技模组!").setStyle(Teaminess.REFUSE_STYLE));
+            source.sendError(Text.literal("请不要随意玩耍硬核自研大数据人工智能黑科技模组!"));
             return 0;
         }
 
@@ -40,30 +41,22 @@ public class TpCommand {
         var target_team = scoreboard.getPlayerTeam(target.getEntityName());
         var destination_team = scoreboard.getPlayerTeam(destination.getEntityName());
 
-        var teleportImmediately = false;
-        if (target_team != null && destination_team != null && target_team.isEqual(destination_team)) {
-            teleportImmediately = Teaminess.options.immediateTeleportationInTeam;
-        } else {
-            teleportImmediately = Teaminess.options.immediateTeleportationBetweenTeam;
-        }
+        boolean confirmRequired = target_team != null && destination_team != null
+                && target_team.isEqual(destination_team) ?
+                Teaminess.options.confirmInTeam :
+                Teaminess.options.confirmBetweenTeams;
+        if (!confirmRequired) return TpHelper.teleportImmediately(target, destination);
 
-        if (teleportImmediately) {
-            return TpHelper.teleportImmediately(target, destination);
-        } else {
-            Teaminess.TpRequests.put(destination.getUuid(), new TpRequest(source.getPlayerOrThrow(), destination));
-
-            var feedback = Text.empty()
-                    .append(target.getDisplayName().copy())
-                    .append(String.format("请求传送至你的位置,可以在%d秒内选择 ",
-                            Teaminess.options.requestExpirationInterval))
-                    .append(Text.literal("接受(//tpa)").setStyle(Teaminess.CLICK_TPACCPET_CMD_STYLE))
-                    .append(" 或 ")
-                    .append(Text.literal("拒绝(//tpr)").setStyle(Teaminess.CLICK_TPREJECT_CMD_STYLE))
-                    .setStyle(Teaminess.MSG_STYLE);
-            destination.getCommandSource().sendFeedback(feedback, false);
-            source.sendFeedback(Text.literal("已发送传送请求").setStyle(Teaminess.MSG_STYLE), false);
-
-            return 1;
-        }
+        Teaminess.TpRequests.put(destination.getUuid(), new TpRequest(source.getPlayerOrThrow(), destination));
+        var feedback = Text.empty()
+                .append(target.getDisplayName().copy())
+                .append(String.format("请求传送至你的位置,可以在%d秒内选择 ", Teaminess.options.responseInterval))
+                .append(Text.literal("接受(//tpa)").setStyle(Styles.CLICK_TPACCPET_CMD_STYLE))
+                .append(" 或 ")
+                .append(Text.literal("拒绝(//tpr)").setStyle(Styles.CLICK_TPREJECT_CMD_STYLE))
+                .setStyle(Styles.MSG_STYLE);
+        destination.sendMessage(feedback);
+        source.sendFeedback(Text.literal("已发送传送请求").setStyle(Styles.MSG_STYLE), false);
+        return 1;
     }
 }

@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import name.nkid00.teaminess.Styles;
 import name.nkid00.teaminess.Teaminess;
 
 import net.minecraft.command.CommandRegistryAccess;
@@ -35,12 +36,12 @@ public class TprejectCommand {
                 var destMsg = Text.literal("已拒绝")
                         .append(target.getDisplayName().copy())
                         .append("的传送请求")
-                        .setStyle(Teaminess.MSG_STYLE);
+                        .setStyle(Styles.MSG_STYLE);
                 source.sendFeedback(destMsg, false);
                 var targetMsg = Text.literal("向")
                         .append(destination.getDisplayName().copy())
                         .append("的传送请求被拒绝")
-                        .setStyle(Teaminess.REFUSE_STYLE);
+                        .setStyle(Styles.REFUSE_STYLE);
                 // refer to class ServerCommandSource method sendError(Text message)
                 request.target.sendMessage(targetMsg.formatted(Formatting.RED));
                 return 1;

@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import name.nkid00.teaminess.Styles;
 import name.nkid00.teaminess.Teaminess;
 import name.nkid00.teaminess.model.Waypoint;
 import name.nkid00.teaminess.model.Location;
@@ -99,7 +100,7 @@ public class WaypointCommand {
         }
         var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
                 .append(" (" + position.toShortString() + ", " + dimension.toString() + ")")
-                .setStyle(Teaminess.MSG_STYLE);
+                .setStyle(Styles.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
     }
@@ -119,7 +120,7 @@ public class WaypointCommand {
                         + ", " + w.getLocation().dimension().toString() + ", "
                         + "记录者:")
                 .append(w.getRecorder())
-                .setStyle(Teaminess.MSG_STYLE);
+                .setStyle(Styles.MSG_STYLE);
         c.getSource().sendFeedback(infoMsg, false);
         return 1;
     }
@@ -132,7 +133,7 @@ public class WaypointCommand {
             source.sendError(Text.literal("无储存的坐标记录点"));
         } else {
             var listMsg = Text.literal("共有" + Teaminess.WaypointMap.size() + "个坐标记录点: ")
-                    .setStyle(Teaminess.MSG_STYLE);
+                    .setStyle(Styles.MSG_STYLE);
 
             Text[] decorated = Teaminess.WaypointMap.keySet().stream()
                     .map(WaypointCommand::decorateName)
@@ -163,7 +164,7 @@ public class WaypointCommand {
         } else if (Teaminess.WaypointMap.remove(name, w)) {
             var removeMsg = Text.literal("已移除坐标记录点 ")
                     .append(decorateName(name, w))
-                    .setStyle(Teaminess.MSG_STYLE);
+                    .setStyle(Styles.MSG_STYLE);
             source.sendFeedback(removeMsg, true);
             res = 1;
         } else {
@@ -197,7 +198,7 @@ public class WaypointCommand {
             Teaminess.WaypointMap.put(newName, w);
             var renameMsg = Text.literal("已将坐标记录点 ").append(decorateName(oldName, w))
                     .append(" 重命名为 ").append(decorateName(newName, w))
-                    .setStyle(Teaminess.MSG_STYLE);
+                    .setStyle(Styles.MSG_STYLE);
             source.sendFeedback(renameMsg, true);
             res = 1;
         } else {
@@ -231,7 +232,7 @@ public class WaypointCommand {
         var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
                 .append(" (" + w.getLocation().position().toShortString()
                         + ", " + w.getLocation().dimension().toString() + ")")
-                .setStyle(Teaminess.MSG_STYLE);
+                .setStyle(Styles.MSG_STYLE);
         source.sendFeedback(addMsg, true);
         return 1;
     }

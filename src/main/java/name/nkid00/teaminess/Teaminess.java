@@ -9,16 +9,12 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 
-import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,21 +32,7 @@ public class Teaminess implements ModInitializer {
             .setPrettyPrinting()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
-    public static final Timer TELEPORT_TIMER = new Timer(true);
-
-    public static final Style MSG_STYLE = Style.EMPTY.withColor(Formatting.YELLOW);
-    public static final Style ACCEPT_STYLE = Style.EMPTY.withColor(Formatting.GREEN);
-    public static final Style REFUSE_STYLE = Style.EMPTY.withColor(Formatting.RED);
-    public static final Style CLICK_TPACCPET_CMD_STYLE = Style.EMPTY
-            .withColor(Formatting.DARK_GREEN)
-            .withUnderline(true)
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
-            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpaccept"));
-    public static final Style CLICK_TPREJECT_CMD_STYLE = Style.EMPTY
-            .withColor(Formatting.DARK_RED)
-            .withUnderline(true)
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("点击执行")))
-            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "//tpreject"));
+    public static final ScheduledExecutorService TELEPORT_TIMER = Executors.newScheduledThreadPool(7);
 
     public static final boolean POTENTIAL_COMMAND_CONFLICT = FabricLoader.getInstance().isModLoaded("worldedit");
     public static final boolean COMPATIBLE_MAP_MODS = FabricLoader.getInstance().isModLoaded("xaerominimap");
@@ -68,11 +50,12 @@ public class Teaminess implements ModInitializer {
         // Options (static and shared globally)
         Options.file = loader.getConfigDir().resolve("teaminess.json").toFile();
         Options.load();
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> Options.save());
 
         // Data (dynamic and stored respectively for each world)
-        Data.file = loader.getConfigDir().resolve("teaminess/data.json").toFile();
+        /*Data.file = loader.getConfigDir().resolve("teaminess/data.json").toFile();
         Data.load();
-        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> Data.save());
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> Data.save());*/
 
         // Commands
         if (POTENTIAL_COMMAND_CONFLICT) {
