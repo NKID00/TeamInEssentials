@@ -32,44 +32,54 @@ public class WaypointCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
             CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(literal("/waypoint")
-                .executes(WaypointCommand::executeList)
-                .then(literal("add")
-                        .then(argument("name", StringArgumentType.string())
-                                .executes(WaypointCommand::executeAddCurrent)
-                                .then(argument("position", BlockPosArgumentType.blockPos())
-                                        .executes(WaypointCommand::executeAddGiven))))
-                .then(literal("info")
-                        .then(argument("name", StringArgumentType.string())
-                                .executes(WaypointCommand::executeInfo)))
-                .then(literal("list")
-                        .executes(WaypointCommand::executeList))
-                .then(literal("rename")
-                        .then(argument("name", StringArgumentType.string())
-                                .then(argument("new name", StringArgumentType.word())
-                                        .executes(WaypointCommand::executeRename))))
-                .then(literal("remove")
-                        .then(argument("name", StringArgumentType.string())
-                                .executes(WaypointCommand::executeRemove)))
+        dispatcher.register(literal("/waypoint").executes(WaypointCommand::executeList)
+                .then(literal("add").then(argument("name", StringArgumentType.string())
+                        .executes(WaypointCommand::executeAddCurrent)
+                        .then(argument("position", BlockPosArgumentType.blockPos())
+                                .executes(WaypointCommand::executeAddGiven))))
+                .then(literal("info").then(argument("name", StringArgumentType.string())
+                        .executes(WaypointCommand::executeInfo)))
+                .then(literal("list").executes(WaypointCommand::executeList))
+                .then(literal("rename").then(argument("name", StringArgumentType.string())
+                        .then(argument("new name", StringArgumentType.word())
+                                .executes(WaypointCommand::executeRename))))
+                .then(literal("remove").then(argument("name", StringArgumentType.string())
+                        .executes(WaypointCommand::executeRemove)))
                 // xaero-map support
                 .then(literal("chat")
                         .then(literal("get").executes(WaypointCommand::executeFromChat))
-                        .then(literal("send")
-                                .then(argument("name", StringArgumentType.string())
-                                        .executes(WaypointCommand::executeToChat)))));
+                        .then(literal("send").then(argument("name", StringArgumentType.string())
+                                .executes(WaypointCommand::executeToChat)))));
     }
 
-    // waypoint add <name> - Auto add here where the player stand to the waypoints.
-    public static int executeAddCurrent(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
+    /**
+     * Auto store the waypoint whose location is where the player stands.
+     * <p>
+     * {@code //waypoint add <name>}
+     * </p>
+     * 
+     * @see #executeAddGiven(CommandContext)
+     */
+    public static int executeAddCurrent(CommandContext<ServerCommandSource> c)
+            throws CommandSyntaxException {
         return addWaypoint(c, false);
     }
 
-    // waypoint add <name> <position>
-    public static int executeAddGiven(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
+    /**
+     * Store the waypoint.
+     * <p>
+     * {@code //waypoint add <name> <position>}
+     * </p>
+     * 
+     * @see #executeAddCurrent(CommandContext)
+     */
+    public static int executeAddGiven(CommandContext<ServerCommandSource> c)
+            throws CommandSyntaxException {
         return addWaypoint(c, true);
     }
 
-    private static int addWaypoint(CommandContext<ServerCommandSource> c, boolean given) throws CommandSyntaxException {
+    private static int addWaypoint(CommandContext<ServerCommandSource> c, boolean given)
+            throws CommandSyntaxException {
         var source = c.getSource();
         var name = StringArgumentType.getString(c, "name");
 
@@ -105,7 +115,12 @@ public class WaypointCommand {
         return 1;
     }
 
-    // waypoint info
+    /**
+     * Output the detailed information of the given.
+     * <p>
+     * {@code //waypoint info <name>}
+     * </p>
+     */
     public static int executeInfo(CommandContext<ServerCommandSource> c) {
         var name = StringArgumentType.getString(c, "name");
 
@@ -116,16 +131,19 @@ public class WaypointCommand {
         }
 
         var infoMsg = Text.literal("坐标 ").append(decorateName(name, w))
-                .append(": " + w.getLocation().position().toShortString()
-                        + ", " + w.getLocation().dimension().toString() + ", "
-                        + "记录者:")
-                .append(w.getRecorder())
-                .setStyle(Styles.NORMAL_MSG);
+                .append(": " + w.getLocation().position().toShortString() + ", "
+                        + w.getLocation().dimension().toString() + ", " + "记录者:")
+                .append(w.getRecorder()).setStyle(Styles.NORMAL_MSG);
         c.getSource().sendFeedback(infoMsg, false);
         return 1;
     }
 
-    // waypoint list
+    /**
+     * List all the waypoint existed.
+     * <p>
+     * {@code //waypoint list}
+     * </p>
+     */
     public static int executeList(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
 
@@ -136,8 +154,7 @@ public class WaypointCommand {
                     .setStyle(Styles.NORMAL_MSG);
 
             Text[] decorated = Teaminess.WaypointMap.keySet().stream()
-                    .map(WaypointCommand::decorateName)
-                    .toArray(Text[]::new);
+                    .map(WaypointCommand::decorateName).toArray(Text[]::new);
             listMsg.append(decorated[0]); // No comma before the first name
             Arrays.stream(decorated).skip(1).forEach(text -> listMsg.append(", ").append(text));
 
@@ -146,8 +163,14 @@ public class WaypointCommand {
         return 1;
     }
 
-    // waypoint remove <name>
-    public static int executeRemove(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
+    /**
+     * Remove the waypoint.
+     * <p>
+     * {@code //waypoint remove <name>}
+     * </p>
+     */
+    public static int executeRemove(CommandContext<ServerCommandSource> c)
+            throws CommandSyntaxException {
         var source = c.getSource();
         var name = StringArgumentType.getString(c, "name");
 
@@ -159,22 +182,24 @@ public class WaypointCommand {
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(name)) == null) {
             source.sendError(Text.literal("无储存的坐标记录点 " + name));
         } else if (!authorized && !(w.getRecorder() == executor)) {
-            source.sendError(Text.literal("您无权限移除坐标记录点 ")
-                    .append(decorateName(name, w)));
+            source.sendError(Text.literal("您无权限移除坐标记录点 ").append(decorateName(name, w)));
         } else if (Teaminess.WaypointMap.remove(name, w)) {
-            var removeMsg = Text.literal("已移除坐标记录点 ")
-                    .append(decorateName(name, w))
+            var removeMsg = Text.literal("已移除坐标记录点 ").append(decorateName(name, w))
                     .setStyle(Styles.NORMAL_MSG);
             source.sendFeedback(removeMsg, true);
             res = 1;
         } else {
-            source.sendError(Text.literal("坐标记录点 ").append(decorateName(name, w))
-                    .append(" 已更改"));
+            source.sendError(Text.literal("坐标记录点 ").append(decorateName(name, w)).append(" 已更改"));
         }
         return res;
     }
 
-    // waypoint rename <name> <new name>
+    /**
+     * Rename the waypoint.
+     * <p>
+     * {@code //waypoint rename <name> <new name>}
+     * </p>
+     */
     public static int executeRename(CommandContext<ServerCommandSource> c) {
         var source = c.getSource();
         var oldName = StringArgumentType.getString(c, "name");
@@ -192,25 +217,28 @@ public class WaypointCommand {
         if (Teaminess.WaypointMap.isEmpty() || (w = Teaminess.WaypointMap.get(oldName)) == null) {
             source.sendError(Text.literal("无储存的坐标记录点 " + oldName));
         } else if (!authorized) {
-            source.sendError(Text.literal("您无权限重命名坐标记录点 ")
-                    .append(decorateName(oldName, w)));
+            source.sendError(Text.literal("您无权限重命名坐标记录点 ").append(decorateName(oldName, w)));
         } else if (Teaminess.WaypointMap.remove(oldName, w)) {
             Teaminess.WaypointMap.put(newName, w);
             var renameMsg = Text.literal("已将坐标记录点 ").append(decorateName(oldName, w))
-                    .append(" 重命名为 ").append(decorateName(newName, w))
-                    .setStyle(Styles.NORMAL_MSG);
+                    .append(" 重命名为 ").append(decorateName(newName, w)).setStyle(Styles.NORMAL_MSG);
             source.sendFeedback(renameMsg, true);
             res = 1;
         } else {
-            source.sendError(Text.literal("坐标记录点 ").append(decorateName(oldName, w))
-                    .append(" 已更改"));
+            source.sendError(
+                    Text.literal("坐标记录点 ").append(decorateName(oldName, w)).append(" 已更改"));
         }
         return res;
     }
 
-    // waypoint chat get - Store the latest shared xaero-waypoint
+    /**
+     * Store the latest shared xaero-waypoint.
+     * <p>
+     * {@code //waypoint chat get}
+     * </p>
+     */
     public static int executeFromChat(CommandContext<ServerCommandSource> c) {
-        if (!Teaminess.COMPATIBLE_MAP_MODS){
+        if (!Teaminess.COMPATIBLE_MAP_MODS) {
             c.getSource().sendError(Text.literal("无兼容的地图模组"));
             return 0;
         }
@@ -229,17 +257,23 @@ public class WaypointCommand {
             source.sendError(Text.literal("坐标记录点 ").append(decorateName(name)).append(" 已存在"));
             return 0;
         }
-        var addMsg = Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
-                .append(" (" + w.getLocation().position().toShortString()
-                        + ", " + w.getLocation().dimension().toString() + ")")
-                .setStyle(Styles.NORMAL_MSG);
+        var addMsg =
+                Text.literal("已添加坐标记录点 ").append(decorateName(name, w))
+                        .append(" (" + w.getLocation().position().toShortString() + ", "
+                                + w.getLocation().dimension().toString() + ")")
+                        .setStyle(Styles.NORMAL_MSG);
         source.sendFeedback(addMsg, true);
         return 1;
     }
 
-    // waypoint chat send <name> - mark the waypoint in the xaero-map
+    /**
+     * Mark the waypoint in the xaero-map.
+     * <p>
+     * {@code //waypoint chat send <name>}
+     * </p>
+     */
     public static int executeToChat(CommandContext<ServerCommandSource> c) {
-        if (!Teaminess.COMPATIBLE_MAP_MODS){
+        if (!Teaminess.COMPATIBLE_MAP_MODS) {
             c.getSource().sendError(Text.literal("无兼容的地图模组"));
             return 0;
 
@@ -253,26 +287,34 @@ public class WaypointCommand {
         }
 
         String dimension = w.getLocation().dimension().toString().split(":")[1];
-        String[] contents = {"xaero-waypoint",
-                name,
-                name.substring(0, 1),
+        String[] contents = {"xaero-waypoint", name, name.substring(0, 1),
                 String.valueOf(w.getLocation().position().getX()),
                 String.valueOf(w.getLocation().position().getY()),
-                String.valueOf(w.getLocation().position().getZ()),
-                String.valueOf(w.getColorId()),
-                "false:0",
-                "Internal-" + dimension + "-waypoints"
-        };
+                String.valueOf(w.getLocation().position().getZ()), String.valueOf(w.getColorId()),
+                "false:0", "Internal-" + dimension + "-waypoints"};
 
         var rcvMsg = Text.literal(String.join(":", contents));
         c.getSource().sendFeedback(rcvMsg, false);
         return 1;
     }
 
+    /**
+     * Store the waypoint information and its name.
+     * 
+     * @param pair left is waypoint name and right is {@code Waypoint} object
+     * @see #addToMap(String, Waypoint)
+     */
     private static boolean addToMap(Pair<String, Waypoint> pair) {
         return addToMap(pair.getLeft(), pair.getRight());
     }
 
+    /**
+     * Store the waypoint information and its name.
+     * 
+     * @param name waypoint name
+     * @param w {@code Waypoint} object
+     * @see #addToMap(Pair)
+     */
     private static boolean addToMap(String name, Waypoint w) {
         return Teaminess.WaypointMap.putIfAbsent(name, w) == null;
     }
@@ -281,18 +323,28 @@ public class WaypointCommand {
         return name.trim().length() == 0;
     }
 
+    /**
+     * Automatically get the waypoint via name and format the name with hover text.
+     * 
+     * @param name the name of waypoint
+     * @see #decorateName(String, Waypoint)
+     */
     private static MutableText decorateName(String name) {
         return decorateName(name, Teaminess.WaypointMap.get(name));
     }
 
-    // Format the name with hover text about the given waypoint
+    /**
+     * Format the name with hover text about the given waypoint.
+     * 
+     * @param name the name of waypoint
+     * @param w waypoint with information such as colorId and location
+     * @see #decorateName(String)
+     */
     private static MutableText decorateName(String name, Waypoint w) {
-        String[] hoverStrComposition = {
-                String.valueOf(w.getLocation().position().getX()),
+        String[] hoverStrComposition = {String.valueOf(w.getLocation().position().getX()),
                 String.valueOf(w.getLocation().position().getY()),
                 String.valueOf(w.getLocation().position().getZ()),
-                w.getLocation().dimension().toString()
-        };
+                w.getLocation().dimension().toString()};
         Text hoverText = Text.literal(String.join(", ", hoverStrComposition));
 
         Style style = Style.EMPTY.withColor(Formatting.byColorIndex(w.getColorId()))

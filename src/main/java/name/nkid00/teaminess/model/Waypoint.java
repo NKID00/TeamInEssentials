@@ -2,6 +2,9 @@ package name.nkid00.teaminess.model;
 
 import net.minecraft.text.Text;
 
+/**
+ * An object which contains information about one location and data about its record.
+ */
 public class Waypoint {
     private Location location;
     private Text recorder;
@@ -31,6 +34,9 @@ public class Waypoint {
         this.colorId = colorId;
     }
 
+    /**
+     * If any property of object is empty then it is judged as invalid.
+     */
     public boolean isInvalid() {
         return this == EMPTY || location == null || recorder == null || !location.isValid();
     }
