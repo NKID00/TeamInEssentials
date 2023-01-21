@@ -22,7 +22,7 @@ public class TprejectCommand {
             CommandManager.RegistrationEnvironment environment) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
                 literal("/tpreject").executes(TprejectCommand::execute));
-        dispatcher.register((literal("/tpr").redirect(literalCommandNode)));
+        dispatcher.register(literal("/tpr").redirect(literalCommandNode).executes(TprejectCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {

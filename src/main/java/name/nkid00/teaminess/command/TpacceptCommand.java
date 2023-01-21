@@ -20,7 +20,7 @@ public class TpacceptCommand {
             CommandManager.RegistrationEnvironment environment) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
                 literal("/tpaccept").executes(TpacceptCommand::execute));
-        dispatcher.register((literal("/tpa").redirect(literalCommandNode)));
+        dispatcher.register(literal("/tpa").redirect(literalCommandNode).executes(TpacceptCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
