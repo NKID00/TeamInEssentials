@@ -3,7 +3,9 @@ package name.nkid00.teaminess.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import name.nkid00.teaminess.Styles;
 import name.nkid00.teaminess.Teaminess;
 
 import net.minecraft.command.CommandRegistryAccess;
@@ -14,12 +16,13 @@ import net.minecraft.util.Formatting;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class TprCommand {
+public class TprejectCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
             CommandRegistryAccess registryAccess,
             CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(
-                literal("/tpr").executes(TprCommand::execute));
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
+                literal("/tpreject").executes(TprejectCommand::execute));
+        dispatcher.register(literal("/tpr").redirect(literalCommandNode).executes(TprejectCommand::execute));
     }
 
     public static int execute(CommandContext<ServerCommandSource> c) throws CommandSyntaxException {
@@ -33,13 +36,13 @@ public class TprCommand {
                 var destMsg = Text.literal("已拒绝")
                         .append(target.getDisplayName().copy())
                         .append("的传送请求")
-                        .setStyle(Teaminess.MSG_STYLE);
+                        .setStyle(Styles.NORMAL_MSG);
                 source.sendFeedback(destMsg, false);
                 var targetMsg = Text.literal("向")
                         .append(destination.getDisplayName().copy())
                         .append("的传送请求被拒绝")
-                        .setStyle(Teaminess.REFUSE_STYLE);
-                // refer to ServerCommandSource method sendError(Text message)
+                        .setStyle(Styles.REJECTED);
+                // refer to class ServerCommandSource method sendError(Text message)
                 request.target.sendMessage(targetMsg.formatted(Formatting.RED));
                 return 1;
             }

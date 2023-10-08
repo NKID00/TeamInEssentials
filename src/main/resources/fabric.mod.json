@@ -10,7 +10,7 @@
     "Cnily03"
   ],
   "contact": {
-    "sources": "https://github.com/NKID00/minimal-teleportation"
+    "sources": "https://github.com/NKID00/TeamInEssentials"
   },
   "license": "MPL-2.0",
   "icon": "assets/teaminess/icon.png",
@@ -26,7 +26,7 @@
   "depends": {
     "fabricloader": ">=0.14",
     "fabric": "*",
-    "minecraft": "~1.19",
+    "minecraft": "1.19.3",
     "java": ">=17"
   }
 }

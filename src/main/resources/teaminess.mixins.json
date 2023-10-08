@@ -6,7 +6,6 @@
   "mixins": [
     "TeleportCommandMixin",
     "SharedConstantsMixin",
-    "ChatMessageMixin"
   ],
   "client": [
     "SharedConstantsMixin"
